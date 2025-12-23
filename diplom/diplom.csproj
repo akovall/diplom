@@ -98,4 +98,5 @@
     <Folder Include="viewmodels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WPF\v16.0\Microsoft.WPF.targets" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\WPF\v16.0\Microsoft.WPF.targets')" />
 </Project>
