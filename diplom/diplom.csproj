@@ -69,12 +69,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="models\Employee.cs" />
-    <Compile Include="models\Project.cs" />
-    <Compile Include="models\Role.cs" />
-    <Compile Include="models\TaskItem.cs" />
-    <Compile Include="models\TimeEntry.cs" />
-    <Compile Include="models\WorkLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -101,7 +95,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="svcs\" />
     <Folder Include="viewmodels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
