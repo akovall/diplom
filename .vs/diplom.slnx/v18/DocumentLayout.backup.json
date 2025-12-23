@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\anko\\source\\repos\\diplom\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|solutionrelative:diplom\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|C:\\Users\\anko\\source\\repos\\diplom\\diplom\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|solutionrelative:diplom\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom.models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|solutionrelative:diplom.models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -33,14 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom.models\\enums\\taskpriority.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|solutionrelative:diplom.models\\enums\\taskpriority.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|solutionrelative:diplom\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|C:\\Users\\anko\\source\\repos\\diplom\\diplom\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|solutionrelative:diplom\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,7 +50,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,7 +58,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "diplom.Data\\AppDbContext.cs",
@@ -71,7 +71,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "TimeEntry.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\TimeEntry.cs",
               "RelativeDocumentMoniker": "diplom.Models\\TimeEntry.cs",
@@ -85,19 +85,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "TaskPriority.cs",
-              "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\enums\\TaskPriority.cs",
-              "RelativeDocumentMoniker": "diplom.Models\\enums\\TaskPriority.cs",
-              "ToolTip": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\enums\\TaskPriority.cs",
-              "RelativeToolTip": "diplom.Models\\enums\\TaskPriority.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-23T13:46:08.834Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
               "Title": "AppTaskStatus.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\enums\\AppTaskStatus.cs",
               "RelativeDocumentMoniker": "diplom.Models\\enums\\AppTaskStatus.cs",
@@ -110,7 +97,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "UserRole.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\enums\\UserRole.cs",
               "RelativeDocumentMoniker": "diplom.Models\\enums\\UserRole.cs",
@@ -123,7 +110,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Project.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\Project.cs",
               "RelativeDocumentMoniker": "diplom.Models\\Project.cs",
@@ -136,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "TaskItem.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\TaskItem.cs",
               "RelativeDocumentMoniker": "diplom.Models\\TaskItem.cs",
@@ -149,20 +136,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\User.cs",
               "RelativeDocumentMoniker": "diplom.Models\\User.cs",
               "ToolTip": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\User.cs",
               "RelativeToolTip": "diplom.Models\\User.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwA8AAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-23T12:28:07.849Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "diplom\\MainWindow.xaml.cs",
@@ -175,7 +162,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml",
               "RelativeDocumentMoniker": "diplom\\MainWindow.xaml",
@@ -183,6 +170,19 @@
               "RelativeToolTip": "diplom\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-12-06T18:47:25.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "TaskPriority.cs",
+              "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\enums\\TaskPriority.cs",
+              "RelativeDocumentMoniker": "diplom.Models\\enums\\TaskPriority.cs",
+              "ToolTip": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\enums\\TaskPriority.cs",
+              "RelativeToolTip": "diplom.Models\\enums\\TaskPriority.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T13:46:08.834Z",
               "EditorCaption": ""
             }
           ]

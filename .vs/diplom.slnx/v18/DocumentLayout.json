@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\anko\\source\\repos\\diplom\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}|diplom.Data\\diplom.Data.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}|diplom.Data\\diplom.Data.csproj|solutionrelative:diplom.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{375806C0-703C-49EB-9861-DEFDEF809714}|diplom\\diplom.csproj|solutionrelative:diplom\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
@@ -21,10 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom.models\\project.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|solutionrelative:diplom.models\\project.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}|diplom.Data\\diplom.Data.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}|diplom.Data\\diplom.Data.csproj|solutionrelative:diplom.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6284249E-0FA7-48CE-8006-C9F263332FDF}|diplom.Models\\diplom.Models.csproj|c:\\users\\anko\\source\\repos\\diplom\\diplom.models\\timeentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,7 +50,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,15 +58,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "diplom.Data\\AppDbContext.cs",
               "ToolTip": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Data\\AppDbContext.cs",
               "RelativeToolTip": "diplom.Data\\AppDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-23T14:52:48.686Z",
+              "WhenOpened": "2025-12-23T15:12:56.537Z",
               "EditorCaption": ""
             },
             {
@@ -110,7 +110,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Project.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\Project.cs",
               "RelativeDocumentMoniker": "diplom.Models\\Project.cs",
@@ -123,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "TaskItem.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\TaskItem.cs",
               "RelativeDocumentMoniker": "diplom.Models\\TaskItem.cs",
@@ -136,7 +136,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "diplom\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml",
+              "RelativeToolTip": "diplom\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-06T18:47:25.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom.Models\\User.cs",
               "RelativeDocumentMoniker": "diplom.Models\\User.cs",
@@ -149,7 +161,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "diplom\\MainWindow.xaml.cs",
@@ -158,18 +170,6 @@
               "ViewState": "AgIAAAkAAAAAAAAAAAAAABgAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-06T18:47:24.37Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "diplom\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\anko\\source\\repos\\diplom\\diplom\\MainWindow.xaml",
-              "RelativeToolTip": "diplom\\MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-06T18:47:25.893Z",
               "EditorCaption": ""
             },
             {
