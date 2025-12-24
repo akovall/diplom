@@ -1,8 +1,102 @@
 ﻿<Window x:Class="diplom.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TimeFlow - Task Manager" Height="450" Width="800"
-        Background="#F0F2F5">
+        
+        xmlns:vm="clr-namespace:diplom.viewmodels"
+        xmlns:views="clr-namespace:diplom.views"
+        
+        Title="TimeFlow - Management System" Height="700" Width="1100"
+        WindowStartupLocation="CenterScreen" Background="#F0F2F5">
 
-    
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:TasksViewModel}">
+            <views:TasksView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type vm:ProjectsViewModel}">
+            <views:ProjectsView/>
+        </DataTemplate>
+
+        <Style x:Key="MenuButtonStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#A0AEC0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border Background="{TemplateBinding Background}" Padding="20,0">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="#2D3748"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="#1A202C">
+            <StackPanel>
+                <TextBlock Text="WORKFLOW" Foreground="White" FontSize="20" FontWeight="Bold" 
+                           HorizontalAlignment="Center" Margin="0,30,0,40"/>
+
+                <RadioButton Content="Dashboard" Style="{StaticResource MenuButtonStyle}" 
+                             IsChecked="True"
+                             Command="{Binding NavigateCommand}" CommandParameter="Dashboard"/>
+
+                <RadioButton Content="Tasks" Style="{StaticResource MenuButtonStyle}"
+                             Command="{Binding NavigateCommand}" CommandParameter="Tasks"/>
+
+                <RadioButton Content="Projects" Style="{StaticResource MenuButtonStyle}"
+                             Command="{Binding NavigateCommand}" CommandParameter="Projects"/>
+
+                <RadioButton Content="Settings" Style="{StaticResource MenuButtonStyle}" Margin="0,50,0,0"
+                             Command="{Binding NavigateCommand}" CommandParameter="Settings"/>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
+                <Grid Margin="20,0">
+                    <TextBlock Text="Dashboard" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="#4A5568"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="Admin" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="#718096"/>
+                        <Ellipse Width="35" Height="35" Fill="#CBD5E0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Margin="20"/>
+        </Grid>
+    </Grid>
 </Window>
