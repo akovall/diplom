@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:diplom.views"
         
         Title="TimeFlow - Management System" Height="700" Width="1100"
-        WindowStartupLocation="CenterScreen" Background="#F0F2F5">
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource PrimaryBackground}">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -27,7 +27,7 @@
 
         <Style x:Key="MenuButtonStyle" TargetType="RadioButton">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#A0AEC0"/>
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryText}"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Height" Value="50"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -43,11 +43,11 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Background" Value="#173631"/>
-                    <Setter Property="Foreground" Value="#2BD4BD"/>
+                    <Setter Property="Background" Value="{DynamicResource AccentBackground}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="#2BD4BD"/>
+                    <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -59,7 +59,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#131720" BorderBrush="#1F232E" BorderThickness="0,0,0.3,0">
+        <Border Grid.Column="0" Background="{DynamicResource SidebarBackground}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0.3,0">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -68,7 +68,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="WORKFLOW" Foreground="White" FontSize="20" FontWeight="Bold" 
+                <TextBlock Grid.Row="0" Text="WORKFLOW" Foreground="{DynamicResource PrimaryText}" FontSize="20" FontWeight="Bold" 
                            HorizontalAlignment="Center" Margin="0,30,0,40"/>
 
                 <StackPanel Grid.Row="1">
@@ -90,8 +90,8 @@
                     <Button Command="{Binding ToggleThemeCommand}" 
                             Height="40"
                             Background="Transparent"
-                            BorderBrush="#2F333E" BorderThickness="1"
-                            Foreground="#A0AEC0"
+                            BorderBrush="{DynamicResource ButtonBorder}" BorderThickness="1"
+                            Foreground="{DynamicResource SecondaryText}"
                             Cursor="Hand">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
@@ -106,8 +106,8 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Foreground" Value="#2BD4BD"/>
-                                        <Setter Property="BorderBrush" Value="#2BD4BD"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentColor}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -117,19 +117,19 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Column="1" Background="#0E121B">
+        <Grid Grid.Column="1" Background="{DynamicResource PrimaryBackground}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="#0E121B" >
+            <Border Grid.Row="0" Background="{DynamicResource HeaderBackground}" >
                 <Grid Margin="20,0">
-                    <TextBlock Text="{Binding CurrentPageTitle}" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock Text="{Binding CurrentPageTitle}" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock Text="Admin" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="#718096"/>
-                        <Ellipse Width="35" Height="35" Fill="#43464A"/>
+                        <TextBlock Text="Admin" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource MutedText}"/>
+                        <Ellipse Width="35" Height="35" Fill="{DynamicResource AvatarBrush}"/>
                     </StackPanel>
                 </Grid>
             </Border>
