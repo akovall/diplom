@@ -4,9 +4,147 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="White">
-        <TextBlock Text="Dashboard" 
-                   FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#CCC"/>
+             d:DesignHeight="700" d:DesignWidth="1000">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <UniformGrid Grid.Row="0" Columns="3" Margin="0,0,0,20">
+
+            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Margin="0,0,10,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Worked Today" Foreground="{DynamicResource SecondaryText}" FontSize="14"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <TextBlock Text="5h 30m" Foreground="{DynamicResource PrimaryText}" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="/ 8h" Foreground="{DynamicResource SecondaryText}" FontSize="16" VerticalAlignment="Bottom" Margin="5,0,0,5"/>
+                    </StackPanel>
+                    <ProgressBar Value="65" Height="6" Margin="0,15,0,0" Foreground="{DynamicResource AccentColor}" Background="{DynamicResource BorderBrush}" BorderThickness="0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Margin="10,0,10,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Tasks (Plan)" Foreground="{DynamicResource SecondaryText}" FontSize="14"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <TextBlock Text="3" Foreground="{DynamicResource PrimaryText}" FontSize="32" FontWeight="Bold"/>
+                        <TextBlock Text="done" Foreground="{DynamicResource SecondaryText}" FontSize="16" VerticalAlignment="Bottom" Margin="5,0,0,5"/>
+                    </StackPanel>
+                    <TextBlock Text="In Progress: 2" Foreground="{DynamicResource AccentColor}" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Margin="10,0,0,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Productivity" Foreground="{DynamicResource SecondaryText}" FontSize="14"/>
+                    <TextBlock Text="92%" Foreground="#38A169" FontSize="32" FontWeight="Bold" Margin="0,10,0,0"/>
+                    <TextBlock Text="Excellent result!" Foreground="{DynamicResource SecondaryText}" FontSize="12" Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Border Grid.Row="1" Background="{DynamicResource AccentColor}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="CURRENT ACTIVITY" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="Database Architecture Development" Foreground="White" FontSize="26" FontWeight="SemiBold" Margin="0,5,0,0"/>
+                    <TextBlock Text="Project: TimeFlow" Foreground="White" Opacity="0.9" FontSize="14" Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="01:24:15" Foreground="White" FontSize="42" FontFamily="Consolas" VerticalAlignment="Center" Margin="0,0,20,0"/>
+
+                    <Button Width="50" Height="50" Background="White" BorderThickness="0" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="25"/>
+                            </Style>
+                        </Button.Resources>
+                        <Path Data="M0,0 L12,0 L12,12 L0,12 z" Fill="{DynamicResource AccentColor}" Stretch="Uniform" Width="14" Height="14"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Margin="0,0,10,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                </Border.Effect>
+                <Grid>
+                    <TextBlock Text="Weekly Activity" Foreground="{DynamicResource PrimaryText}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Top"/>
+
+                    <UniformGrid Columns="7" VerticalAlignment="Bottom" Height="150" Margin="10,40,10,0">
+                        <Border Width="20" Height="80" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
+                        <Border Width="20" Height="120" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
+                        <Border Width="20" Height="100" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
+                        <Border Width="20" Height="140" VerticalAlignment="Bottom" Background="{DynamicResource AccentColor}" CornerRadius="4"/>
+                        <Border Width="20" Height="60" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
+                        <Border Width="20" Height="0" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
+                        <Border Width="20" Height="0" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
+                    </UniformGrid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Margin="10,0,0,0" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Urgent" Foreground="{DynamicResource PrimaryText}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,15"/>
+
+                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="#FC8181" CornerRadius="2"/>
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="Report for Boss" Foreground="{DynamicResource PrimaryText}" FontWeight="Medium"/>
+                                <TextBlock Text="Today, 17:00" Foreground="#FC8181" FontSize="12"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="#F6AD55" CornerRadius="2"/>
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="Code Review" Foreground="{DynamicResource PrimaryText}" FontWeight="Medium"/>
+                                <TextBlock Text="Tomorrow, 10:00" Foreground="{DynamicResource SecondaryText}" FontSize="12"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

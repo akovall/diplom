@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:diplom"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+               
+                <ResourceDictionary Source="/Assets/Themes/Dark.xaml"/>
+                <ResourceDictionary Source="/Assets/Themes/Light.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

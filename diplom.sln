@@ -1,0 +1,37 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diplom", "diplom\diplom.csproj", "{375806C0-703C-49EB-9861-DEFDEF809714}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diplom.Models", "diplom.Models\diplom.Models.csproj", "{6284249E-0FA7-48CE-8006-C9F263332FDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diplom.Data", "diplom.Data\diplom.Data.csproj", "{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diplom.Services", "diplom.Services\diplom.Services.csproj", "{3FE76CFF-69CB-4320-AC20-162BF7255DCD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{375806C0-703C-49EB-9861-DEFDEF809714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375806C0-703C-49EB-9861-DEFDEF809714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375806C0-703C-49EB-9861-DEFDEF809714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375806C0-703C-49EB-9861-DEFDEF809714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6284249E-0FA7-48CE-8006-C9F263332FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6284249E-0FA7-48CE-8006-C9F263332FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6284249E-0FA7-48CE-8006-C9F263332FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6284249E-0FA7-48CE-8006-C9F263332FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CACB11C-2F39-40FF-8A53-0ECE1DCE7DB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE76CFF-69CB-4320-AC20-162BF7255DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE76CFF-69CB-4320-AC20-162BF7255DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE76CFF-69CB-4320-AC20-162BF7255DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE76CFF-69CB-4320-AC20-162BF7255DCD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
