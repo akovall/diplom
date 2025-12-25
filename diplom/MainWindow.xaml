@@ -20,7 +20,7 @@
         <DataTemplate DataType="{x:Type vm:TasksViewModel}">
             <views:TasksView/>
         </DataTemplate>
-        
+
         <DataTemplate DataType="{x:Type vm:ProjectsViewModel}">
             <views:ProjectsView/>
         </DataTemplate>
@@ -59,24 +59,62 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#131720" BorderBrush="#1F232E" BorderThickness="0,0,0.5,0">
-            <StackPanel>
-                <TextBlock Text="WORKFLOW" Foreground="White" FontSize="20" FontWeight="Bold" 
+        <Border Grid.Column="0" Background="#131720" BorderBrush="#1F232E" BorderThickness="0,0,0.3,0">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="WORKFLOW" Foreground="White" FontSize="20" FontWeight="Bold" 
                            HorizontalAlignment="Center" Margin="0,30,0,40"/>
 
-                <RadioButton Content="Dashboard" Style="{StaticResource MenuButtonStyle}" 
-                             IsChecked="True"
-                             Command="{Binding NavigateCommand}" CommandParameter="Dashboard"/>
+                <StackPanel Grid.Row="1">
+                    <RadioButton Content="Dashboard" Style="{StaticResource MenuButtonStyle}" 
+                                 IsChecked="True"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Dashboard"/>
 
-                <RadioButton Content="Tasks" Style="{StaticResource MenuButtonStyle}"
-                             Command="{Binding NavigateCommand}" CommandParameter="Tasks"/>
+                    <RadioButton Content="Tasks" Style="{StaticResource MenuButtonStyle}"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Tasks"/>
 
-                <RadioButton Content="Projects" Style="{StaticResource MenuButtonStyle}"
-                             Command="{Binding NavigateCommand}" CommandParameter="Projects"/>
+                    <RadioButton Content="Projects" Style="{StaticResource MenuButtonStyle}"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Projects"/>
 
-                <RadioButton Content="Settings" Style="{StaticResource MenuButtonStyle}" Margin="0,50,0,0"
-                             Command="{Binding NavigateCommand}" CommandParameter="Settings"/>
-            </StackPanel>
+                    <RadioButton Content="Settings" Style="{StaticResource MenuButtonStyle}" Margin="0,20,0,0"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Settings"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Margin="15,0,15,30">
+                    <Button Command="{Binding ToggleThemeCommand}" 
+                            Height="40"
+                            Background="Transparent"
+                            BorderBrush="#2F333E" BorderThickness="1"
+                            Foreground="#A0AEC0"
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                        CornerRadius="8">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding ThemeIcon}" FontSize="14" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Theme" FontSize="13"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="#2BD4BD"/>
+                                        <Setter Property="BorderBrush" Value="#2BD4BD"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Border>
 
         <Grid Grid.Column="1" Background="#0E121B">
@@ -95,7 +133,6 @@
                     </StackPanel>
                 </Grid>
             </Border>
-
             <ContentControl Grid.Row="1" Content="{Binding CurrentView}" Margin="20"/>
         </Grid>
     </Grid>

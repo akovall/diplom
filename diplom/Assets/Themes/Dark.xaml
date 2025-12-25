@@ -3,13 +3,13 @@
 
     <SolidColorBrush x:Key="PrimaryBackground" Color="#121212"/>
 
-    <SolidColorBrush x:Key="SurfaceBrush" Color="#1E1E1E"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#141821"/>
 
     <SolidColorBrush x:Key="PrimaryText" Color="#E2E8F0"/>
 
     <SolidColorBrush x:Key="SecondaryText" Color="#A0AEC0"/>
 
-    <SolidColorBrush x:Key="AccentColor" Color="#63B3ED"/>
+    <SolidColorBrush x:Key="AccentColor" Color="#245F97"/>
 
     <SolidColorBrush x:Key="BorderBrush" Color="#2D3748"/>
 

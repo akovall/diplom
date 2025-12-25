@@ -9,6 +9,8 @@
                
                 <ResourceDictionary Source="/Assets/Themes/Dark.xaml"/>
                 <ResourceDictionary Source="/Assets/Themes/Light.xaml"/>
+                
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
