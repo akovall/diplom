@@ -45,4 +45,13 @@
     <sys:String x:Key="Today">Сьогодні</sys:String>
     <sys:String x:Key="Tomorrow">Завтра</sys:String>
 
+    <sys:String x:Key="SettingsAppearance">Зовнішній вигляд</sys:String>
+    <sys:String x:Key="SettingsTheme">Тема інтерфейсу</sys:String>
+    <sys:String x:Key="SettingsThemeDesc">Перемикання між світлою та темною темою</sys:String>
+    <sys:String x:Key="SettingsLanguageSection">Мова та регіон</sys:String>
+    <sys:String x:Key="SettingsLanguage">Мова інтерфейсу</sys:String>
+    <sys:String x:Key="SettingsLanguageDesc">Оберіть мову для відображення інтерфейсу</sys:String>
+    <sys:String x:Key="SettingsAbout">Про програму</sys:String>
+    <sys:String x:Key="SettingsVersion">Версія:</sys:String>
+
 </ResourceDictionary>

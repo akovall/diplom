@@ -45,4 +45,13 @@
     <sys:String x:Key="Today">Today</sys:String>
     <sys:String x:Key="Tomorrow">Tomorrow</sys:String>
 
+    <sys:String x:Key="SettingsAppearance">Appearance</sys:String>
+    <sys:String x:Key="SettingsTheme">Interface Theme</sys:String>
+    <sys:String x:Key="SettingsThemeDesc">Switch between light and dark theme</sys:String>
+    <sys:String x:Key="SettingsLanguageSection">Language &amp; Region</sys:String>
+    <sys:String x:Key="SettingsLanguage">Interface Language</sys:String>
+    <sys:String x:Key="SettingsLanguageDesc">Choose display language for the interface</sys:String>
+    <sys:String x:Key="SettingsAbout">About</sys:String>
+    <sys:String x:Key="SettingsVersion">Version:</sys:String>
+
 </ResourceDictionary>
