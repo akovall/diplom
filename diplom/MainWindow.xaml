@@ -5,7 +5,7 @@
         xmlns:vm="clr-namespace:diplom.viewmodels"
         xmlns:views="clr-namespace:diplom.views"
         
-        Title="TimeFlow - Management System" Height="700" Width="1100"
+        Title="{DynamicResource AppTitle}" Height="700" Width="1100"
         WindowStartupLocation="CenterScreen" Background="{DynamicResource PrimaryBackground}">
 
     <Window.DataContext>
@@ -47,24 +47,24 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="WORKFLOW" Foreground="{DynamicResource PrimaryText}" FontSize="20" FontWeight="Bold" 
+                <TextBlock Grid.Row="0" Text="{DynamicResource BrandName}" Foreground="{DynamicResource PrimaryText}" FontSize="20" FontWeight="Bold" 
                            HorizontalAlignment="Center" Margin="0,30,0,40"/>
 
                 <StackPanel Grid.Row="1">
-                    <RadioButton Content="Dashboard" Style="{StaticResource MenuButtonStyle}" 
+                    <RadioButton Content="{DynamicResource MenuDashboard}" Style="{StaticResource MenuButtonStyle}" 
                                  IsChecked="True"
                                  Command="{Binding NavigateCommand}" CommandParameter="Dashboard"/>
 
-                    <RadioButton Content="Tasks" Style="{StaticResource MenuButtonStyle}"
+                    <RadioButton Content="{DynamicResource MenuTasks}" Style="{StaticResource MenuButtonStyle}"
                                  Command="{Binding NavigateCommand}" CommandParameter="Tasks"/>
 
-                    <RadioButton Content="Projects" Style="{StaticResource MenuButtonStyle}"
+                    <RadioButton Content="{DynamicResource MenuProjects}" Style="{StaticResource MenuButtonStyle}"
                                  Command="{Binding NavigateCommand}" CommandParameter="Projects"/>
 
-                    <RadioButton Content="Time Tracker" Style="{StaticResource MenuButtonStyle}"
+                    <RadioButton Content="{DynamicResource MenuTimeTracker}" Style="{StaticResource MenuButtonStyle}"
                                  Command="{Binding NavigateCommand}" CommandParameter="TimeTracker"/>
 
-                    <RadioButton Content="Settings" Style="{StaticResource MenuButtonStyle}" Margin="0,20,0,0"
+                    <RadioButton Content="{DynamicResource MenuSettings}" Style="{StaticResource MenuButtonStyle}" Margin="0,20,0,0"
                                  Command="{Binding NavigateCommand}" CommandParameter="Settings"/>
                 </StackPanel>
 
@@ -83,7 +83,7 @@
                                         CornerRadius="8">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding ThemeIcon}" FontSize="14" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Theme" FontSize="13"/>
+                                        <TextBlock Text="{DynamicResource MenuTheme}" FontSize="13"/>
                                     </StackPanel>
                                 </Border>
                                 <ControlTemplate.Triggers>

@@ -1,0 +1,48 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="AppTitle">TimeFlow - Система управління</sys:String>
+    <sys:String x:Key="BrandName">WORKFLOW</sys:String>
+    <sys:String x:Key="MenuDashboard">Головна</sys:String>
+    <sys:String x:Key="MenuTasks">Задачі</sys:String>
+    <sys:String x:Key="MenuProjects">Проекти</sys:String>
+    <sys:String x:Key="MenuTimeTracker">Облік часу</sys:String>
+    <sys:String x:Key="MenuAnalytics">Аналітика</sys:String>
+    <sys:String x:Key="MenuSettings">Налаштування</sys:String>
+    <sys:String x:Key="MenuTheme">Тема</sys:String>
+    <sys:String x:Key="WorkedToday">Відпрацьовано сьогодні</sys:String>
+    <sys:String x:Key="TasksPlan">Завдання (план)</sys:String>
+    <sys:String x:Key="Productivity">Продуктивність</sys:String>
+    <sys:String x:Key="ExcellentResult">Відмінний результат!</sys:String>
+    <sys:String x:Key="CurrentActivity">ПОТОЧНА АКТИВНІСТЬ</sys:String>
+    <sys:String x:Key="WeeklyActivity">Активність за тиждень</sys:String>
+    <sys:String x:Key="Urgent">Термінове</sys:String>
+    <sys:String x:Key="Done">Виконано</sys:String>
+    <sys:String x:Key="InProgress">В роботі</sys:String>
+    <sys:String x:Key="SearchTasks">Пошук завдань...</sys:String>
+    <sys:String x:Key="NewTask">Нове завдання</sys:String>
+    <sys:String x:Key="AllTasks">Всі</sys:String>
+    <sys:String x:Key="ToDo">Очікує</sys:String>
+    <sys:String x:Key="Start">Старт</sys:String>
+    <sys:String x:Key="Stop">Стоп</sys:String>
+    <sys:String x:Key="TimeTracker">ОБЛІК ЧАСУ</sys:String>
+    <sys:String x:Key="TodayLogs">Записи за сьогодні</sys:String>
+    <sys:String x:Key="Entries">записів</sys:String>
+    <sys:String x:Key="SelectTask">Оберіть завдання</sys:String>
+    <sys:String x:Key="SearchProjects">Пошук проектів...</sys:String>
+    <sys:String x:Key="NewProject">Новий проект</sys:String>
+    <sys:String x:Key="ActiveProjects">Активні</sys:String>
+    <sys:String x:Key="ArchivedProjects">Архівовані</sys:String>
+    <sys:String x:Key="Tasks">завдань</sys:String>
+    <sys:String x:Key="Language">Мова</sys:String>
+    <sys:String x:Key="LanguageUkrainian">Українська</sys:String>
+    <sys:String x:Key="LanguageEnglish">English</sys:String>
+    <sys:String x:Key="Save">Зберегти</sys:String>
+    <sys:String x:Key="Cancel">Скасувати</sys:String>
+    <sys:String x:Key="Delete">Видалити</sys:String>
+    <sys:String x:Key="Edit">Редагувати</sys:String>
+    <sys:String x:Key="Today">Сьогодні</sys:String>
+    <sys:String x:Key="Tomorrow">Завтра</sys:String>
+
+</ResourceDictionary>

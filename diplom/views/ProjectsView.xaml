@@ -50,7 +50,7 @@
                         </TextBox.Resources>
                     </TextBox>
 
-                    <TextBlock Text="Search projects..." IsHitTestVisible="False"
+                    <TextBlock Text="{DynamicResource SearchProjects}" IsHitTestVisible="False"
                                Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" Opacity="0.5">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -78,7 +78,7 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="+" Margin="0,0,8,0" FontSize="16" Height="25"/>
-                    <TextBlock Text="New Project" Height="16"/>
+                    <TextBlock Text="{DynamicResource NewProject}" Height="16"/>
                 </StackPanel>
             </Button>
         </Grid>

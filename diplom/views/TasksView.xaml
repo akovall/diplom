@@ -50,7 +50,7 @@
                         </TextBox.Resources>
                     </TextBox>
 
-                    <TextBlock Text="Search tasks..." IsHitTestVisible="False"
+                    <TextBlock Text="{DynamicResource SearchTasks}" IsHitTestVisible="False"
                                Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource SecondaryText}" Opacity="0.5">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -77,16 +77,16 @@
                 </Button.Resources>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="+" Margin="0,0,8,0" FontSize="16" Height="25"/>
-                    <TextBlock Text="New Task" Height="16"/>
+                    <TextBlock Text="{DynamicResource NewTask}" Height="16"/>
                 </StackPanel>
             </Button>
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,15">
-            <RadioButton Content="All" IsChecked="True" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="0,0,5,0"/>
-            <RadioButton Content="To Do" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
-            <RadioButton Content="In Progress" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
-            <RadioButton Content="Done" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
+            <RadioButton Content="{DynamicResource AllTasks}" IsChecked="True" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="0,0,5,0"/>
+            <RadioButton Content="{DynamicResource ToDo}" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
+            <RadioButton Content="{DynamicResource InProgress}" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
+            <RadioButton Content="{DynamicResource Done}" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
