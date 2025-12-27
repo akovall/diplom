@@ -66,6 +66,10 @@ namespace diplom.viewmodels
                     CurrentView = new ProjectsViewModel();
                     CurrentPageTitle = "Projects";
                     break;
+                case "TimeTracker":
+                    CurrentView = new TimeTrackerViewModel();
+                    CurrentPageTitle = "Time Tracker";
+                    break;
             }
         }
     }

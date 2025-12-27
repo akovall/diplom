@@ -104,7 +104,7 @@
                                             <Setter Property="BorderThickness" Value="2"/>
                                             <Setter Property="Effect">
                                                 <Setter.Value>
-                                                    <DropShadowEffect Color="{DynamicResource AccentColorValue}" Opacity="0.2" BlurRadius="10"/>
+                                                    <DropShadowEffect Color="#14B8A6" Opacity="0.2" BlurRadius="10"/>
                                                 </Setter.Value>
                                             </Setter>
                                         </DataTrigger>

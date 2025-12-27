@@ -25,6 +25,10 @@
             <views:ProjectsView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type vm:TimeTrackerViewModel}">
+            <views:TimeTrackerView/>
+        </DataTemplate>
+
 
     </Window.Resources>
 
@@ -56,6 +60,9 @@
 
                     <RadioButton Content="Projects" Style="{StaticResource MenuButtonStyle}"
                                  Command="{Binding NavigateCommand}" CommandParameter="Projects"/>
+
+                    <RadioButton Content="Time Tracker" Style="{StaticResource MenuButtonStyle}"
+                                 Command="{Binding NavigateCommand}" CommandParameter="TimeTracker"/>
 
                     <RadioButton Content="Settings" Style="{StaticResource MenuButtonStyle}" Margin="0,20,0,0"
                                  Command="{Binding NavigateCommand}" CommandParameter="Settings"/>

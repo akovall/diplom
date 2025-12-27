@@ -1,0 +1,155 @@
+<UserControl x:Class="diplom.views.TimeTrackerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{DynamicResource AccentColor}" CornerRadius="16" Padding="30" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="TIME TRACKER" Foreground="White" Opacity="0.8" FontSize="12" FontWeight="Bold"/>
+                    
+                    <ComboBox ItemsSource="{Binding AvailableTasks}" 
+                              SelectedItem="{Binding SelectedTask}"
+                              Margin="0,15,0,0"
+                              Width="350"
+                              HorizontalAlignment="Left"
+                              Height="40"
+                              FontSize="14"
+                              Background="{DynamicResource SurfaceBrush}"
+                              Foreground="{DynamicResource PrimaryText}"
+                              BorderBrush="White"
+                              BorderThickness="1">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Title}" FontWeight="Medium"/>
+                                    <TextBlock Text=" — " Opacity="0.6"/>
+                                    <TextBlock Text="{Binding ProjectName}" Opacity="0.6"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding ElapsedTime}" 
+                               Foreground="White" 
+                               FontSize="56" 
+                               FontFamily="Consolas" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,30,0"/>
+
+                    <Button Command="{Binding ToggleTimerCommand}" 
+                            Width="80" Height="80" 
+                            Background="White" 
+                            BorderThickness="0" 
+                            Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="40"/>
+                            </Style>
+                        </Button.Resources>
+                        <TextBlock Text="{Binding StartButtonText}" 
+                                   Foreground="{DynamicResource AccentColor}" 
+                                   FontSize="16" 
+                                   FontWeight="Bold"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="20">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                    <TextBlock Text="Today's Time Logs" 
+                               Foreground="{DynamicResource PrimaryText}" 
+                               FontSize="20" 
+                               FontWeight="SemiBold"/>
+                    <TextBlock Text=" — " 
+                               Foreground="{DynamicResource SecondaryText}" 
+                               FontSize="20" 
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding TodayLogs.Count, StringFormat='{}{0} entries'}" 
+                               Foreground="{DynamicResource SecondaryText}" 
+                               FontSize="16" 
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding TodayLogs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource PrimaryBackground}" 
+                                        CornerRadius="10" 
+                                        Margin="0,0,0,10" 
+                                        Padding="15">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="4"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Background="{DynamicResource AccentColor}" CornerRadius="2"/>
+
+                                        <StackPanel Grid.Column="1" Margin="15,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding TaskTitle}" 
+                                                       Foreground="{DynamicResource PrimaryText}" 
+                                                       FontWeight="SemiBold" 
+                                                       FontSize="15"/>
+                                            <TextBlock Text="{Binding ProjectName}" 
+                                                       Foreground="{DynamicResource SecondaryText}" 
+                                                       FontSize="13" 
+                                                       Margin="0,3,0,0"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,30,0">
+                                            <TextBlock Foreground="{DynamicResource SecondaryText}" FontSize="13">
+                                                <Run Text="{Binding StartTime}"/>
+                                                <Run Text=" — "/>
+                                                <Run Text="{Binding EndTime}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="3" 
+                                                Background="{DynamicResource AccentColor}" 
+                                                CornerRadius="8" 
+                                                Padding="15,8" 
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Duration}" 
+                                                       Foreground="White" 
+                                                       FontWeight="Bold" 
+                                                       FontSize="14"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
