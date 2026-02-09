@@ -32,14 +32,14 @@ namespace diplom.viewmodels
 
         public string StartButtonText => IsTimerRunning ? "Stop" : "Start";
 
-        private TaskItem _selectedTask;
-        public TaskItem SelectedTask
+        private TrackerTaskItem _selectedTask;
+        public TrackerTaskItem SelectedTask
         {
             get => _selectedTask;
             set => SetProperty(ref _selectedTask, value);
         }
 
-        public ObservableCollection<TaskItem> AvailableTasks { get; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TrackerTaskItem> AvailableTasks { get; } = new ObservableCollection<TrackerTaskItem>();
         public ObservableCollection<TimeLogEntry> TodayLogs { get; } = new ObservableCollection<TimeLogEntry>();
 
         public ICommand ToggleTimerCommand { get; }
@@ -57,10 +57,10 @@ namespace diplom.viewmodels
 
         private void LoadSampleData()
         {
-            AvailableTasks.Add(new TaskItem { Id = 1, Title = "Implement login page", ProjectName = "Website Redesign" });
-            AvailableTasks.Add(new TaskItem { Id = 2, Title = "Fix navigation bug", ProjectName = "Mobile App" });
-            AvailableTasks.Add(new TaskItem { Id = 3, Title = "Write unit tests", ProjectName = "Backend API" });
-            AvailableTasks.Add(new TaskItem { Id = 4, Title = "Design dashboard mockup", ProjectName = "Analytics Platform" });
+            AvailableTasks.Add(new TrackerTaskItem { Id = 1, Title = "Implement login page", ProjectName = "Website Redesign" });
+            AvailableTasks.Add(new TrackerTaskItem { Id = 2, Title = "Fix navigation bug", ProjectName = "Mobile App" });
+            AvailableTasks.Add(new TrackerTaskItem { Id = 3, Title = "Write unit tests", ProjectName = "Backend API" });
+            AvailableTasks.Add(new TrackerTaskItem { Id = 4, Title = "Design dashboard mockup", ProjectName = "Analytics Platform" });
 
             TodayLogs.Add(new TimeLogEntry
             {
@@ -136,7 +136,7 @@ namespace diplom.viewmodels
         }
     }
 
-    public class TaskItem
+    public class TrackerTaskItem
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -117,6 +117,7 @@
                                     <ColumnDefinition Width="6"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
                                 <Border Grid.Column="0" CornerRadius="8,0,0,8" Width="6" HorizontalAlignment="Left">
@@ -171,7 +172,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,15,0">
                                     <Button Command="{Binding ToggleTimerCommand}" Width="45" Height="45" 
                                             Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
                                             Cursor="Hand">
@@ -221,6 +222,50 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </StackPanel>
+
+                                <!-- Options Menu (3 dots) -->
+                                <Button Grid.Column="3" Width="36" Height="36" 
+                                        Background="Transparent" BorderThickness="0"
+                                        VerticalAlignment="Center" Margin="0,0,10,0" Cursor="Hand"
+                                        Click="OptionsButton_Click">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="18"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <TextBlock Text="⋮" FontSize="18" FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryText}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <Button.ContextMenu>
+                                        <ContextMenu Background="{DynamicResource SurfaceBrush}" 
+                                                     BorderBrush="{DynamicResource BorderBrush}"
+                                                     Padding="0">
+                                            <ContextMenu.Resources>
+                                                <Style TargetType="MenuItem">
+                                                    <Setter Property="Padding" Value="12,8"/>
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </Style>
+                                            </ContextMenu.Resources>
+                                            <MenuItem Header="{DynamicResource MenuEdit}" Command="{Binding EditCommand}"
+                                                      Foreground="{DynamicResource PrimaryText}"
+                                                      Background="{DynamicResource SurfaceBrush}"/>
+                                            <Separator Background="{DynamicResource BorderBrush}" Margin="0"/>
+                                            <MenuItem Header="{DynamicResource MenuDelete}" Command="{Binding DeleteCommand}"
+                                                      Foreground="#E53E3E"
+                                                      Background="{DynamicResource SurfaceBrush}"/>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                </Button>
 
                             </Grid>
                         </Border>
