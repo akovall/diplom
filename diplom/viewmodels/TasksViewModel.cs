@@ -128,6 +128,21 @@ namespace diplom.viewmodels
             }
         }
 
+        private string _selectedSortOption = "Priority";
+        public string SelectedSortOption
+        {
+            get => _selectedSortOption;
+            set
+            {
+                if (SetProperty(ref _selectedSortOption, value))
+                {
+                    FilterTasks();
+                }
+            }
+        }
+
+        public string[] SortOptions { get; } = new[] { "Priority", "Status", "Deadline", "Title" };
+
         // === Create Task Dialog Properties ===
         private bool _isCreateDialogOpen;
         public bool IsCreateDialogOpen
@@ -473,10 +488,38 @@ namespace diplom.viewmodels
                     t.ProjectName.ToLower().Contains(query));
             }
 
-            foreach (var task in filtered.OrderByDescending(t => t.Priority))
+            // Apply sorting
+            IOrderedEnumerable<TaskDisplayItem> sorted = SelectedSortOption switch
+            {
+                "Status" => filtered
+                    .OrderBy(t => GetStatusOrder(t.Status))
+                    .ThenByDescending(t => t.Priority),
+                "Deadline" => filtered
+                    .OrderBy(t => t.Deadline ?? DateTime.MaxValue)
+                    .ThenByDescending(t => t.Priority),
+                "Title" => filtered
+                    .OrderBy(t => t.Title)
+                    .ThenByDescending(t => t.Priority),
+                _ => filtered.OrderByDescending(t => t.Priority) // Default: Priority
+            };
+
+            foreach (var task in sorted)
             {
                 Tasks.Add(task);
             }
+        }
+
+        private int GetStatusOrder(string status)
+        {
+            // Order: In Progress (active work first), To Do, On Hold, Done
+            return status switch
+            {
+                "In Progress" => 0,
+                "To Do" => 1,
+                "On Hold" => 2,
+                "Done" => 3,
+                _ => 4
+            };
         }
     }
 }

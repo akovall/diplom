@@ -101,5 +101,29 @@ namespace diplom.views
                 button.ContextMenu.IsOpen = true;
             }
         }
+
+        private void StatusFilter_All(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TasksViewModel vm)
+                vm.SelectedStatusFilter = "All";
+        }
+
+        private void StatusFilter_ToDo(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TasksViewModel vm)
+                vm.SelectedStatusFilter = "To Do";
+        }
+
+        private void StatusFilter_InProgress(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TasksViewModel vm)
+                vm.SelectedStatusFilter = "In Progress";
+        }
+
+        private void StatusFilter_Done(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TasksViewModel vm)
+                vm.SelectedStatusFilter = "Done";
+        }
     }
 }

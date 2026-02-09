@@ -82,12 +82,37 @@
             </Button>
         </Grid>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,15">
-            <RadioButton Content="{DynamicResource AllTasks}" IsChecked="True" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="0,0,5,0"/>
-            <RadioButton Content="{DynamicResource ToDo}" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
-            <RadioButton Content="{DynamicResource InProgress}" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
-            <RadioButton Content="{DynamicResource Done}" GroupName="StatusFilter" Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"/>
-        </StackPanel>
+        <Grid Grid.Row="1" Margin="0,15,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Status Filters -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <RadioButton Content="{DynamicResource AllTasks}" IsChecked="True" GroupName="StatusFilter" 
+                             Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="0,0,5,0"
+                             Checked="StatusFilter_All"/>
+                <RadioButton Content="{DynamicResource ToDo}" GroupName="StatusFilter" 
+                             Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"
+                             Checked="StatusFilter_ToDo"/>
+                <RadioButton Content="{DynamicResource InProgress}" GroupName="StatusFilter" 
+                             Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"
+                             Checked="StatusFilter_InProgress"/>
+                <RadioButton Content="{DynamicResource Done}" GroupName="StatusFilter" 
+                             Style="{StaticResource MenuButtonStyle}" Height="30" FontSize="12" Margin="5,0"
+                             Checked="StatusFilter_Done"/>
+            </StackPanel>
+            
+            <!-- Sort ComboBox -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Sort:" Foreground="{DynamicResource SecondaryText}" 
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding SortOptions}" 
+                          SelectedItem="{Binding SelectedSortOption}"
+                          Width="120" Height="30"/>
+            </StackPanel>
+        </Grid>
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
             <ItemsControl ItemsSource="{Binding Tasks}">
