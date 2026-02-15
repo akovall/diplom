@@ -1,5 +1,4 @@
 using diplom.viewmodels;
-using diplom.Services;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -56,41 +55,11 @@ namespace diplom.views
 
             if (result == true && dialog.WasSaved)
             {
-                // Save changes to database
-                try
+                if (DataContext is TasksViewModel vm)
                 {
-                    var dataService = AppDataService.Instance;
-                    var dbTask = dataService.Tasks.Find(t => t.Id == task.Id);
-                    
-                    if (dbTask != null)
-                    {
-                        dbTask.Title = task.Title;
-                        dbTask.Description = task.Description;
-                        dbTask.Status = MapStringToStatus(task.Status);
-                        dbTask.Priority = (diplom.Models.enums.TaskPriority)task.Priority;
-                        dbTask.Deadline = task.Deadline;
-                        
-                        await dataService.UpdateTaskAsync(dbTask);
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    MessageBox.Show($"Помилка збереження: {ex.Message}", "Помилка", 
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    await vm.SaveTaskEditAsync(task);
                 }
             }
-        }
-
-        private diplom.Models.enums.AppTaskStatus MapStringToStatus(string status)
-        {
-            return status switch
-            {
-                "To Do" => diplom.Models.enums.AppTaskStatus.ToDo,
-                "In Progress" => diplom.Models.enums.AppTaskStatus.InProgress,
-                "On Hold" => diplom.Models.enums.AppTaskStatus.OnHold,
-                "Done" => diplom.Models.enums.AppTaskStatus.Done,
-                _ => diplom.Models.enums.AppTaskStatus.ToDo
-            };
         }
 
         private void OptionsButton_Click(object sender, RoutedEventArgs e)

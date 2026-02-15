@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:vm="clr-namespace:diplom.viewmodels"
+             xmlns:conv="clr-namespace:diplom.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000">
 
     <UserControl.Resources>
-        <vm:StringIsNullOrEmptyConverter x:Key="StringIsNullOrEmptyConverter"/>
+        <conv:StringIsNullOrEmptyConverter x:Key="StringIsNullOrEmptyConverter"/>
     </UserControl.Resources>
 
     <Grid Margin="20">

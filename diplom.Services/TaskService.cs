@@ -104,5 +104,34 @@ namespace diplom.Services
             var totalTicks = entries.Sum(e => e.Duration.Ticks);
             return TimeSpan.FromTicks(totalTicks);
         }
+        // Status mapping helpers
+        public string MapStatusToString(AppTaskStatus status)
+        {
+            return status switch
+            {
+                AppTaskStatus.ToDo => "To Do",
+                AppTaskStatus.InProgress => "In Progress",
+                AppTaskStatus.OnHold => "On Hold",
+                AppTaskStatus.Done => "Done",
+                _ => "To Do"
+            };
+        }
+
+        public AppTaskStatus MapStringToStatus(string status)
+        {
+            return status switch
+            {
+                "To Do" => AppTaskStatus.ToDo,
+                "In Progress" => AppTaskStatus.InProgress,
+                "On Hold" => AppTaskStatus.OnHold,
+                "Done" => AppTaskStatus.Done,
+                _ => AppTaskStatus.ToDo
+            };
+        }
+
+        public string FormatTimeSpan(TimeSpan ts)
+        {
+            return ts.ToString(@"hh\:mm\:ss");
+        }
     }
 }

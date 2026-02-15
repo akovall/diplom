@@ -6,93 +6,12 @@ using diplom.Models.enums;
 using diplom.Services;
 using System;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace diplom.viewmodels
 {
-    public class TaskDisplayItem : ObservableObject
-    {
-        public int Id { get; set; }
-        
-        private string _title = string.Empty;
-        public string Title
-        {
-            get => _title;
-            set => SetProperty(ref _title, value);
-        }
-
-        private string _description = string.Empty;
-        public string Description
-        {
-            get => _description;
-            set => SetProperty(ref _description, value);
-        }
-
-        private int _priority;
-        public int Priority
-        {
-            get => _priority;
-            set => SetProperty(ref _priority, value);
-        }
-
-        private string _status = "To Do";
-        public string Status
-        {
-            get => _status;
-            set
-            {
-                if (SetProperty(ref _status, value))
-                {
-                    // Trigger save when status changes
-                    OnStatusChanged?.Invoke(this);
-                }
-            }
-        }
-
-        private string _timeSpentFormatted = "00:00:00";
-        public string TimeSpentFormatted
-        {
-            get => _timeSpentFormatted;
-            set => SetProperty(ref _timeSpentFormatted, value);
-        }
-
-        private bool _isActive;
-        public bool IsActive
-        {
-            get => _isActive;
-            set => SetProperty(ref _isActive, value);
-        }
-
-        public string ProjectName { get; set; } = string.Empty;
-        public int ProjectId { get; set; }
-        public DateTime? Deadline { get; set; }
-
-        public IRelayCommand ToggleTimerCommand { get; set; }
-        public IRelayCommand EditCommand { get; set; }
-        public IRelayCommand DeleteCommand { get; set; }
-        
-        // Callback when status changes
-        public Action<TaskDisplayItem>? OnStatusChanged { get; set; }
-    }
-
-    public class StringIsNullOrEmptyConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return string.IsNullOrEmpty(value as string);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class TasksViewModel : ObservableObject
     {
         // Event to request opening dialog from View
@@ -209,10 +128,21 @@ namespace diplom.viewmodels
 
         private ObservableCollection<TaskDisplayItem> _allTasks = new();
         private readonly AppDataService _dataService;
+        private readonly ITaskService _taskService;
+        private readonly IDialogService _dialogService;
 
         public TasksViewModel()
+            : this(
+                new TaskService(new AppDbContext()),
+                new DialogService())
+        {
+        }
+
+        public TasksViewModel(ITaskService taskService, IDialogService dialogService)
         {
             _dataService = AppDataService.Instance;
+            _taskService = taskService;
+            _dialogService = dialogService;
 
             CreateTaskCommand = new RelayCommand(OpenCreateDialog);
             OpenCreateDialogCommand = new RelayCommand(OpenCreateDialog);
@@ -276,7 +206,6 @@ namespace diplom.viewmodels
             }
         }
 
-
         private TaskDisplayItem MapToDisplayItem(TaskItem task, TimeSpan timeSpent)
         {
             var item = new TaskDisplayItem
@@ -285,8 +214,8 @@ namespace diplom.viewmodels
                 Title = task.Title,
                 Description = task.Description,
                 Priority = (int)task.Priority,
-                Status = MapStatusToString(task.Status),
-                TimeSpentFormatted = FormatTimeSpan(timeSpent),
+                Status = _taskService.MapStatusToString(task.Status),
+                TimeSpentFormatted = _taskService.FormatTimeSpan(timeSpent),
                 ProjectName = task.Project?.Title ?? "No Project",
                 ProjectId = task.ProjectId,
                 Deadline = task.Deadline,
@@ -298,19 +227,16 @@ namespace diplom.viewmodels
                 item.IsActive = !item.IsActive;
             });
 
-            // Edit command - opens edit dialog
             item.EditCommand = new RelayCommand(() =>
             {
                 RequestEditTask?.Invoke(this, item);
             });
 
-            // Delete command - deletes with confirmation
             item.DeleteCommand = new AsyncRelayCommand(async () =>
             {
                 await DeleteTaskAsync(item);
             });
 
-            // Subscribe to status changes to save to DB
             item.OnStatusChanged = OnTaskStatusChanged;
 
             return item;
@@ -321,50 +247,43 @@ namespace diplom.viewmodels
             _ = SaveStatusAsync(displayItem);
         }
 
-        private async Task SaveStatusAsync(TaskDisplayItem displayItem)
+        public async Task SaveStatusAsync(TaskDisplayItem displayItem)
         {
             try
             {
                 var task = _dataService.Tasks.FirstOrDefault(t => t.Id == displayItem.Id);
                 if (task != null)
                 {
-                    task.Status = MapStringToStatus(displayItem.Status);
+                    task.Status = _taskService.MapStringToStatus(displayItem.Status);
                     await _dataService.UpdateTaskAsync(task);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving status: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError($"Error saving status: {ex.Message}");
             }
         }
 
-        private string MapStatusToString(AppTaskStatus status)
+        public async Task SaveTaskEditAsync(TaskDisplayItem displayItem)
         {
-            return status switch
+            try
             {
-                AppTaskStatus.ToDo => "To Do",
-                AppTaskStatus.InProgress => "In Progress",
-                AppTaskStatus.OnHold => "On Hold",
-                AppTaskStatus.Done => "Done",
-                _ => "To Do"
-            };
-        }
+                var dbTask = _dataService.Tasks.Find(t => t.Id == displayItem.Id);
+                if (dbTask != null)
+                {
+                    dbTask.Title = displayItem.Title;
+                    dbTask.Description = displayItem.Description;
+                    dbTask.Status = _taskService.MapStringToStatus(displayItem.Status);
+                    dbTask.Priority = (TaskPriority)displayItem.Priority;
+                    dbTask.Deadline = displayItem.Deadline;
 
-        private AppTaskStatus MapStringToStatus(string status)
-        {
-            return status switch
+                    await _dataService.UpdateTaskAsync(dbTask);
+                }
+            }
+            catch (Exception ex)
             {
-                "To Do" => AppTaskStatus.ToDo,
-                "In Progress" => AppTaskStatus.InProgress,
-                "On Hold" => AppTaskStatus.OnHold,
-                "Done" => AppTaskStatus.Done,
-                _ => AppTaskStatus.ToDo
-            };
-        }
-
-        private string FormatTimeSpan(TimeSpan ts)
-        {
-            return ts.ToString(@"hh\:mm\:ss");
+                _dialogService.ShowError($"Error saving task: {ex.Message}");
+            }
         }
 
         private void OpenCreateDialog()
@@ -401,13 +320,13 @@ namespace diplom.viewmodels
         {
             if (string.IsNullOrWhiteSpace(NewTaskTitle))
             {
-                MessageBox.Show("Task title is required", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _dialogService.ShowWarning("Task title is required", "Validation");
                 return;
             }
 
             if (SelectedProject == null)
             {
-                MessageBox.Show("Please select a project", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _dialogService.ShowWarning("Please select a project", "Validation");
                 return;
             }
 
@@ -435,7 +354,7 @@ namespace diplom.viewmodels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error creating task: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError($"Error creating task: {ex.Message}");
             }
         }
 
@@ -443,13 +362,8 @@ namespace diplom.viewmodels
         {
             if (task == null) return;
 
-            var result = MessageBox.Show(
-                $"Are you sure you want to delete '{task.Title}'?",
-                "Confirm Delete",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result != MessageBoxResult.Yes) return;
+            if (!_dialogService.Confirm($"Are you sure you want to delete '{task.Title}'?", "Confirm Delete"))
+                return;
 
             try
             {
@@ -462,7 +376,7 @@ namespace diplom.viewmodels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error deleting task: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError($"Error deleting task: {ex.Message}");
             }
         }
 
