@@ -1,0 +1,132 @@
+<Window x:Class="diplom.views.EditTaskDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="Редактировать задачу" 
+        Height="560" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="36" CornerRadius="12" GlassFrameThickness="0" 
+                      ResizeBorderThickness="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="{DynamicResource PrimaryBackground}" CornerRadius="12" 
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="Black"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Border Grid.Row="0" Background="{DynamicResource SidebarBackground}" CornerRadius="12,12,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <TextBlock Text="{DynamicResource EditTaskTitle}" FontWeight="SemiBold" FontSize="13"
+                               Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"
+                               Margin="16,0,0,0"/>
+                    
+                    <Button Content="✕" Width="36" Height="36" 
+                            HorizontalAlignment="Right"
+                            BorderThickness="0" Background="Transparent" Foreground="{DynamicResource SecondaryText}"
+                            Click="CancelButton_Click" FontSize="11" Cursor="Hand"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#E53935"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Form Content -->
+            <Grid Grid.Row="1" Margin="24,16,24,24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Form -->
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- Title -->
+                        <TextBlock Text="{DynamicResource TaskNameLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,0,0,6"/>
+                        <TextBox x:Name="TitleTextBox" Height="42" FontSize="14"/>
+
+                        <!-- Description -->
+                        <TextBlock Text="{DynamicResource TaskDescriptionLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <TextBox x:Name="DescriptionTextBox" 
+                                 TextWrapping="Wrap" AcceptsReturn="True" Height="80"
+                                 VerticalContentAlignment="Top" FontSize="14"/>
+
+                        <!-- Status -->
+                        <TextBlock Text="{DynamicResource TaskStatusLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <ComboBox x:Name="StatusComboBox" Height="42">
+                            <sys:String>To Do</sys:String>
+                            <sys:String>In Progress</sys:String>
+                            <sys:String>On Hold</sys:String>
+                            <sys:String>Done</sys:String>
+                        </ComboBox>
+
+                        <!-- Priority -->
+                        <TextBlock Text="{DynamicResource TaskPriorityLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <ComboBox x:Name="PriorityComboBox" Height="42">
+                            <ComboBoxItem Content="Низький" Tag="0"/>
+                            <ComboBoxItem Content="Середній" Tag="1"/>
+                            <ComboBoxItem Content="Високий" Tag="2"/>
+                            <ComboBoxItem Content="Критичний" Tag="3"/>
+                        </ComboBox>
+
+                        <!-- Deadline -->
+                        <TextBlock Text="{DynamicResource TaskDeadlineLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <DatePicker x:Name="DeadlinePicker" Height="42"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Buttons -->
+                <Grid Grid.Row="1" Margin="0,24,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="{DynamicResource CancelButton}" 
+                            Click="CancelButton_Click"
+                            Height="44"
+                            Background="Transparent" 
+                            Foreground="{DynamicResource SecondaryText}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"/>
+
+                    <Button Grid.Column="2" Content="{DynamicResource SaveButton}" 
+                            Click="SaveButton_Click"
+                            Height="44"
+                            Background="{DynamicResource AccentColor}" 
+                            Foreground="White" FontWeight="SemiBold"
+                            BorderThickness="0"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

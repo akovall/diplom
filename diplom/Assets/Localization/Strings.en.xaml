@@ -54,4 +54,28 @@
     <sys:String x:Key="SettingsAbout">About</sys:String>
     <sys:String x:Key="SettingsVersion">Version:</sys:String>
 
+    <!-- Create Task Dialog -->
+    <sys:String x:Key="CreateTaskTitle">Create Task</sys:String>
+    <sys:String x:Key="CreateTaskSubtitle">Fill in the information for the new task</sys:String>
+    <sys:String x:Key="TaskTitleLabel">Task Title *</sys:String>
+    <sys:String x:Key="TaskDescriptionLabel">Description</sys:String>
+    <sys:String x:Key="TaskProjectLabel">Project *</sys:String>
+    <sys:String x:Key="TaskPriorityLabel">Priority</sys:String>
+    <sys:String x:Key="TaskDeadlineLabel">Deadline</sys:String>
+    <sys:String x:Key="TaskEstimatedHoursLabel">Estimated Hours</sys:String>
+    <sys:String x:Key="CreateButton">Create</sys:String>
+    <sys:String x:Key="CancelButton">Cancel</sys:String>
+    <sys:String x:Key="ConfirmDeleteTitle">Confirm Delete</sys:String>
+    <sys:String x:Key="ConfirmDeleteMessage">Are you sure you want to delete this task?</sys:String>
+
+    <!-- Edit Task Dialog -->
+    <sys:String x:Key="EditTaskTitle">Edit Task</sys:String>
+    <sys:String x:Key="TaskNameLabel">Title</sys:String>
+    <sys:String x:Key="TaskStatusLabel">Status</sys:String>
+    <sys:String x:Key="SaveButton">Save</sys:String>
+    
+    <!-- Context Menu -->
+    <sys:String x:Key="MenuEdit">Edit</sys:String>
+    <sys:String x:Key="MenuDelete">Delete</sys:String>
+
 </ResourceDictionary>

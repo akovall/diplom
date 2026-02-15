@@ -54,4 +54,28 @@
     <sys:String x:Key="SettingsAbout">Про програму</sys:String>
     <sys:String x:Key="SettingsVersion">Версія:</sys:String>
 
+    <!-- Create Task Dialog -->
+    <sys:String x:Key="CreateTaskTitle">Створити завдання</sys:String>
+    <sys:String x:Key="CreateTaskSubtitle">Заповніть інформацію про нове завдання</sys:String>
+    <sys:String x:Key="TaskTitleLabel">Назва завдання *</sys:String>
+    <sys:String x:Key="TaskDescriptionLabel">Опис</sys:String>
+    <sys:String x:Key="TaskProjectLabel">Проект *</sys:String>
+    <sys:String x:Key="TaskPriorityLabel">Пріоритет</sys:String>
+    <sys:String x:Key="TaskDeadlineLabel">Дедлайн</sys:String>
+    <sys:String x:Key="TaskEstimatedHoursLabel">Оцінка часу (години)</sys:String>
+    <sys:String x:Key="CreateButton">Створити</sys:String>
+    <sys:String x:Key="CancelButton">Скасувати</sys:String>
+    <sys:String x:Key="ConfirmDeleteTitle">Підтвердження видалення</sys:String>
+    <sys:String x:Key="ConfirmDeleteMessage">Ви впевнені, що хочете видалити це завдання?</sys:String>
+
+    <!-- Edit Task Dialog -->
+    <sys:String x:Key="EditTaskTitle">Редагувати завдання</sys:String>
+    <sys:String x:Key="TaskNameLabel">Назва</sys:String>
+    <sys:String x:Key="TaskStatusLabel">Статус</sys:String>
+    <sys:String x:Key="SaveButton">Зберегти</sys:String>
+    
+    <!-- Context Menu -->
+    <sys:String x:Key="MenuEdit">Редагувати</sys:String>
+    <sys:String x:Key="MenuDelete">Видалити</sys:String>
+
 </ResourceDictionary>

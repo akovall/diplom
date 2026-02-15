@@ -1,0 +1,146 @@
+<Window x:Class="diplom.views.CreateTaskDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="{DynamicResource CreateTaskTitle}" 
+        Height="560" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="36" CornerRadius="12" GlassFrameThickness="0" 
+                      ResizeBorderThickness="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="{DynamicResource PrimaryBackground}" CornerRadius="12" 
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="Black"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Border Grid.Row="0" Background="{DynamicResource SidebarBackground}" CornerRadius="12,12,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <TextBlock Text="{DynamicResource CreateTaskTitle}" FontWeight="SemiBold" FontSize="13"
+                               Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"
+                               Margin="16,0,0,0"/>
+                    
+                    <Button x:Name="CloseButton" Content="✕" Width="36" Height="36" 
+                            HorizontalAlignment="Right"
+                            BorderThickness="0" Background="Transparent" Foreground="{DynamicResource SecondaryText}"
+                            Click="CancelButton_Click" FontSize="11" Cursor="Hand"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#E53935"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Form Content -->
+            <Grid Grid.Row="1" Margin="24,16,24,24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Subtitle -->
+                <TextBlock Grid.Row="0" Text="{DynamicResource CreateTaskSubtitle}" 
+                           FontSize="13" Margin="0,0,0,20"
+                           Foreground="{DynamicResource SecondaryText}"/>
+
+                <!-- Form -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- Title -->
+                        <TextBlock Text="{DynamicResource TaskTitleLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,0,0,6"/>
+                        <TextBox Text="{Binding NewTaskTitle, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="42" FontSize="14"/>
+
+                        <!-- Description -->
+                        <TextBlock Text="{DynamicResource TaskDescriptionLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <TextBox Text="{Binding NewTaskDescription, UpdateSourceTrigger=PropertyChanged}" 
+                                 TextWrapping="Wrap" AcceptsReturn="True" Height="80"
+                                 VerticalContentAlignment="Top" FontSize="14"/>
+
+                        <!-- Project -->
+                        <TextBlock Text="{DynamicResource TaskProjectLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <ComboBox ItemsSource="{Binding AvailableProjects}" 
+                                  SelectedItem="{Binding SelectedProject}"
+                                  DisplayMemberPath="Title" Height="42"/>
+
+                        <!-- Priority -->
+                        <TextBlock Text="{DynamicResource TaskPriorityLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <ComboBox SelectedItem="{Binding NewTaskPriority}" Height="42">
+                            <ComboBox.ItemsSource>
+                                <x:Array Type="{x:Type sys:String}">
+                                    <sys:String>Low</sys:String>
+                                    <sys:String>Medium</sys:String>
+                                    <sys:String>High</sys:String>
+                                    <sys:String>Critical</sys:String>
+                                </x:Array>
+                            </ComboBox.ItemsSource>
+                        </ComboBox>
+
+                        <!-- Deadline -->
+                        <TextBlock Text="{DynamicResource TaskDeadlineLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <DatePicker SelectedDate="{Binding NewTaskDeadline}" Height="42"/>
+
+                        <!-- Estimated Hours -->
+                        <TextBlock Text="{DynamicResource TaskEstimatedHoursLabel}" 
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <TextBox Text="{Binding NewTaskEstimatedHours, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="42" FontSize="14"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Buttons -->
+                <Grid Grid.Row="2" Margin="0,24,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="{DynamicResource CancelButton}" 
+                            Click="CancelButton_Click"
+                            Height="44"
+                            Background="Transparent" 
+                            Foreground="{DynamicResource SecondaryText}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"/>
+
+                    <Button Grid.Column="2" Content="{DynamicResource CreateButton}" 
+                            Click="CreateButton_Click"
+                            Height="44"
+                            Background="{DynamicResource AccentColor}" 
+                            Foreground="White" FontWeight="SemiBold"
+                            BorderThickness="0"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
