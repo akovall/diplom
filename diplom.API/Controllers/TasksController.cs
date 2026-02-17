@@ -1,12 +1,15 @@
 using diplom.Data;
 using diplom.Models;
 using diplom.Models.enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace diplom.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
@@ -15,6 +18,11 @@ namespace diplom.API.Controllers
         public TasksController(AppDbContext context)
         {
             _context = context;
+        }
+
+        private int GetCurrentUserId()
+        {
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         }
 
         // GET: api/tasks
@@ -46,6 +54,22 @@ namespace diplom.API.Controllers
                 return NotFound();
 
             return Ok(task);
+        }
+
+        // GET: api/tasks/my — tasks assigned to current user
+        [HttpGet("my")]
+        public async Task<ActionResult<List<TaskItem>>> GetMyTasks()
+        {
+            var userId = GetCurrentUserId();
+            var tasks = await _context.Tasks
+                .Include(t => t.Project)
+                .Include(t => t.TimeEntries)
+                .Where(t => t.AssigneeId == userId)
+                .OrderByDescending(t => t.Priority)
+                .ThenByDescending(t => t.CreatedAt)
+                .ToListAsync();
+
+            return Ok(tasks);
         }
 
         // GET: api/tasks/project/2
