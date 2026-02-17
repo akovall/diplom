@@ -1,0 +1,6 @@
+@diplom.API_HostAddress = http://localhost:5074
+
+GET {{diplom.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
