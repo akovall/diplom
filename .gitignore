@@ -1,5 +1,6 @@
 .vs/
 bin/
 obj/
+docs/
 instructions.txt
 TimeFlow_Backup.sql
