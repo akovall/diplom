@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Text.Json.Serialization;
+
 namespace diplom.Models
 {
     public class TimeEntry
@@ -22,10 +24,12 @@ namespace diplom.Models
         
         public int TaskId { get; set; }
         [ForeignKey("TaskId")]
+        [JsonIgnore]
         public TaskItem? Task { get; set; }
 
         public int UserId { get; set; }
         [ForeignKey("UserId")]
+        [JsonIgnore]
         public User? User { get; set; }
 
         [NotMapped]

@@ -1,7 +1,5 @@
-using diplom.Data;
 using diplom.Models;
 using diplom.Models.enums;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +8,7 @@ using System.Threading.Tasks;
 namespace diplom.Services
 {
     /// <summary>
-    /// Singleton service that caches application data at startup
+    /// Singleton service that caches application data loaded from the API
     /// </summary>
     public class AppDataService
     {
@@ -32,7 +30,7 @@ namespace diplom.Services
             }
         }
 
-        private readonly AppDbContext _context;
+        private readonly ApiClient _api;
         
         // Cached data
         public List<TaskItem> Tasks { get; private set; } = new();
@@ -50,7 +48,7 @@ namespace diplom.Services
 
         private AppDataService()
         {
-            _context = new AppDbContext();
+            _api = ApiClient.Instance;
         }
 
         public async Task LoadAllDataAsync()
@@ -61,31 +59,17 @@ namespace diplom.Services
             
             try
             {
-                // Load Projects
+                // Load Projects from API
                 UpdateStatus("Loading projects...");
-                Projects = await _context.Projects
-                    .Where(p => !p.IsArchived)
-                    .OrderBy(p => p.Title)
-                    .ToListAsync();
+                Projects = await _api.GetAsync<List<Project>>("/api/projects") ?? new();
 
-                // Load Tasks with related data
+                // Load Tasks from API
                 UpdateStatus("Loading tasks...");
-                Tasks = await _context.Tasks
-                    .Include(t => t.Project)
-                    .Include(t => t.Assignee)
-                    .Include(t => t.TimeEntries)
-                    .OrderByDescending(t => t.Priority)
-                    .ThenByDescending(t => t.CreatedAt)
-                    .ToListAsync();
+                Tasks = await _api.GetAsync<List<TaskItem>>("/api/tasks") ?? new();
 
-                // Load today's time entries
+                // Load today's time entries from API
                 UpdateStatus("Loading time entries...");
-                var today = DateTime.Today;
-                TimeEntries = await _context.TimeLogs
-                    .Include(t => t.Task)
-                    .Where(t => t.StartTime.Date == today || (t.EndTime.HasValue && t.EndTime.Value.Date == today))
-                    .OrderByDescending(t => t.StartTime)
-                    .ToListAsync();
+                TimeEntries = await _api.GetAsync<List<TimeEntry>>("/api/timeentries/today") ?? new();
 
                 IsLoaded = true;
                 UpdateStatus("Ready!");
@@ -111,24 +95,13 @@ namespace diplom.Services
         // Refresh individual collections
         public async Task RefreshTasksAsync()
         {
-            Tasks = await _context.Tasks
-                .Include(t => t.Project)
-                .Include(t => t.Assignee)
-                .Include(t => t.TimeEntries)
-                .OrderByDescending(t => t.Priority)
-                .ThenByDescending(t => t.CreatedAt)
-                .ToListAsync();
-            
+            Tasks = await _api.GetAsync<List<TaskItem>>("/api/tasks") ?? new();
             DataLoaded?.Invoke();
         }
 
         public async Task RefreshProjectsAsync()
         {
-            Projects = await _context.Projects
-                .Where(p => !p.IsArchived)
-                .OrderBy(p => p.Title)
-                .ToListAsync();
-            
+            Projects = await _api.GetAsync<List<Project>>("/api/projects") ?? new();
             DataLoaded?.Invoke();
         }
 
@@ -173,18 +146,10 @@ namespace diplom.Services
                 .ToList();
         }
 
-        // CRUD operations that update cache
+        // CRUD operations via API (update cache after)
         public async Task<TaskItem> CreateTaskAsync(TaskItem task)
         {
-            task.CreatedAt = DateTime.UtcNow;
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
-            
-            // Reload with related entities
-            var created = await _context.Tasks
-                .Include(t => t.Project)
-                .Include(t => t.TimeEntries)
-                .FirstOrDefaultAsync(t => t.Id == task.Id);
+            var created = await _api.PostAsync<TaskItem>("/api/tasks", task);
             
             if (created != null)
             {
@@ -196,48 +161,30 @@ namespace diplom.Services
 
         public async Task<bool> DeleteTaskAsync(int id)
         {
-            var task = await _context.Tasks.FindAsync(id);
-            if (task == null) return false;
-
-            _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
-            
-            Tasks.RemoveAll(t => t.Id == id);
-            return true;
+            try
+            {
+                await _api.DeleteAsync($"/api/tasks/{id}");
+                Tasks.RemoveAll(t => t.Id == id);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<TaskItem> UpdateTaskAsync(TaskItem task)
         {
-            var existing = await _context.Tasks.FindAsync(task.Id);
-            if (existing == null)
-                throw new InvalidOperationException($"Task with ID {task.Id} not found");
-
-            existing.Title = task.Title;
-            existing.Description = task.Description;
-            existing.Status = task.Status;
-            existing.Priority = task.Priority;
-            existing.Deadline = task.Deadline;
-            existing.EstimatedHours = task.EstimatedHours;
-            existing.ProjectId = task.ProjectId;
-
-            await _context.SaveChangesAsync();
+            var updated = await _api.PutAsync<TaskItem>($"/api/tasks/{task.Id}", task);
             
             // Update cache
             var index = Tasks.FindIndex(t => t.Id == task.Id);
-            if (index >= 0)
+            if (index >= 0 && updated != null)
             {
-                var updated = await _context.Tasks
-                    .Include(t => t.Project)
-                    .Include(t => t.TimeEntries)
-                    .FirstOrDefaultAsync(t => t.Id == task.Id);
-                
-                if (updated != null)
-                {
-                    Tasks[index] = updated;
-                }
+                Tasks[index] = updated;
             }
             
-            return existing;
+            return updated ?? task;
         }
     }
 }

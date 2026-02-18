@@ -138,11 +138,11 @@ namespace diplom.viewmodels
         {
             return status switch
             {
-                Models.enums.AppTaskStatus.ToDo => "Очікує",
-                Models.enums.AppTaskStatus.InProgress => "В роботі",
-                Models.enums.AppTaskStatus.OnHold => "На паузі",
-                Models.enums.AppTaskStatus.Done => "Виконано",
-                _ => "Очікує"
+                Models.enums.AppTaskStatus.ToDo => "Pending",
+                Models.enums.AppTaskStatus.InProgress => "In Progress",
+                Models.enums.AppTaskStatus.OnHold => "On Hold",
+                Models.enums.AppTaskStatus.Done => "Done",
+                _ => "Pending"
             };
         }
 

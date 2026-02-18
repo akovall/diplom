@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using diplom.Data;
 using diplom.Models;
 using diplom.Models.enums;
 using diplom.Services;
@@ -67,7 +66,7 @@ namespace diplom.viewmodels
 
         public TasksViewModel()
             : this(
-                new TaskService(new AppDbContext()),
+                new ApiTaskService(),
                 new DialogService())
         {
         }

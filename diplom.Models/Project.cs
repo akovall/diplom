@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace diplom.Models
 {
@@ -15,6 +16,7 @@ namespace diplom.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsArchived { get; set; } = false;
 
+        [JsonIgnore]
         public List<TaskItem> Tasks { get; set; } = new();
     }
 }

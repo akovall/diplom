@@ -1,11 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using diplom.Models;
+using diplom.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace diplom.viewmodels
 {
     public class ProjectDisplayItem : ObservableObject
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Color { get; set; }
@@ -15,51 +20,66 @@ namespace diplom.viewmodels
         public string ProgressText => $"{CompletedTaskCount}/{TaskCount} tasks";
     }
 
-    public class ProjectsViewModel : ObservableObject
+    public partial class ProjectsViewModel : ObservableObject
     {
-        public ObservableCollection<ProjectDisplayItem> Projects { get; set; }
-        public string SearchQuery { get; set; }
+        private readonly AppDataService _dataService;
+
+        public ObservableCollection<ProjectDisplayItem> Projects { get; set; } = new();
+
+        [ObservableProperty]
+        private string _searchQuery;
+
         public IRelayCommand CreateProjectCommand { get; }
+        public IAsyncRelayCommand RefreshCommand { get; }
+
+        // Default color palette for projects
+        private static readonly string[] _defaultColors =
+        {
+            "#E53E3E", "#38A169", "#3182CE", "#D69E2E", "#805AD5",
+            "#DD6B20", "#E53E3E", "#319795", "#D53F8C", "#718096"
+        };
 
         public ProjectsViewModel()
         {
-            Projects = new ObservableCollection<ProjectDisplayItem>
-            {
-                new ProjectDisplayItem 
-                { 
-                    Name = "Administration", 
-                    Description = "System administration and infrastructure management tasks.",
-                    Color = "#E53E3E",
-                    TaskCount = 12,
-                    CompletedTaskCount = 8
-                },
-                new ProjectDisplayItem 
-                { 
-                    Name = "Test", 
-                    Description = "Quality assurance and testing automation project.",
-                    Color = "#38A169",
-                    TaskCount = 24,
-                    CompletedTaskCount = 18
-                },
-                new ProjectDisplayItem 
-                { 
-                    Name = "Diplom", 
-                    Description = "Diploma project - task management system development.",
-                    Color = "#3182CE",
-                    TaskCount = 15,
-                    CompletedTaskCount = 6
-                },
-                new ProjectDisplayItem 
-                { 
-                    Name = "Marketing", 
-                    Description = "Marketing campaigns and brand development initiatives.",
-                    Color = "#D69E2E",
-                    TaskCount = 8,
-                    CompletedTaskCount = 3
-                },
-            };
-
+            _dataService = AppDataService.Instance;
             CreateProjectCommand = new RelayCommand(() => { });
+            RefreshCommand = new AsyncRelayCommand(LoadProjectsAsync);
+
+            // Subscribe to data updates
+            _dataService.DataLoaded += OnDataLoaded;
+            
+            if (_dataService.IsLoaded)
+            {
+                OnDataLoaded();
+            }
+        }
+
+        private void OnDataLoaded()
+        {
+            Projects.Clear();
+            int colorIndex = 0;
+            foreach (var project in _dataService.Projects)
+            {
+                var taskCount = project.Tasks?.Count ?? 0;
+                var completedCount = project.Tasks?.Count(t => t.Status == Models.enums.AppTaskStatus.Done) ?? 0;
+
+                Projects.Add(new ProjectDisplayItem
+                {
+                    Id = project.Id,
+                    Name = project.Title,
+                    Description = project.Description ?? "",
+                    Color = _defaultColors[colorIndex % _defaultColors.Length],
+                    TaskCount = taskCount,
+                    CompletedTaskCount = completedCount
+                });
+                colorIndex++;
+            }
+        }
+
+        private async Task LoadProjectsAsync()
+        {
+            await _dataService.RefreshProjectsAsync();
+            OnDataLoaded();
         }
     }
 }

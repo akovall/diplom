@@ -45,7 +45,7 @@ namespace diplom.views
         {
             if (string.IsNullOrWhiteSpace(TitleTextBox.Text))
             {
-                MessageBox.Show("Назва задачі обов'язкова", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Task title is required", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

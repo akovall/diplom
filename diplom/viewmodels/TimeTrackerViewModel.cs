@@ -1,7 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using diplom.Models;
+using diplom.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -9,6 +12,8 @@ namespace diplom.viewmodels
 {
     public class TimeTrackerViewModel : ObservableObject
     {
+        private readonly AppDataService _dataService;
+        private readonly ApiClient _api;
         private DispatcherTimer _timer;
         private DateTime _startTime;
 
@@ -46,38 +51,49 @@ namespace diplom.viewmodels
 
         public TimeTrackerViewModel()
         {
+            _dataService = AppDataService.Instance;
+            _api = ApiClient.Instance;
+
             ToggleTimerCommand = new RelayCommand(ToggleTimer);
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
 
-            LoadSampleData();
+            // Subscribe to data updates
+            _dataService.DataLoaded += LoadDataFromCache;
+
+            if (_dataService.IsLoaded)
+            {
+                LoadDataFromCache();
+            }
         }
 
-        private void LoadSampleData()
+        private void LoadDataFromCache()
         {
-            AvailableTasks.Add(new TrackerTaskItem { Id = 1, Title = "Implement login page", ProjectName = "Website Redesign" });
-            AvailableTasks.Add(new TrackerTaskItem { Id = 2, Title = "Fix navigation bug", ProjectName = "Mobile App" });
-            AvailableTasks.Add(new TrackerTaskItem { Id = 3, Title = "Write unit tests", ProjectName = "Backend API" });
-            AvailableTasks.Add(new TrackerTaskItem { Id = 4, Title = "Design dashboard mockup", ProjectName = "Analytics Platform" });
+            AvailableTasks.Clear();
+            foreach (var task in _dataService.Tasks.Where(t => t.Status != Models.enums.AppTaskStatus.Done))
+            {
+                AvailableTasks.Add(new TrackerTaskItem
+                {
+                    Id = task.Id,
+                    Title = task.Title,
+                    ProjectName = task.Project?.Title ?? "No Project"
+                });
+            }
 
-            TodayLogs.Add(new TimeLogEntry
+            TodayLogs.Clear();
+            foreach (var entry in _dataService.TimeEntries)
             {
-                TaskTitle = "Code review",
-                ProjectName = "Backend API",
-                Duration = "1h 30m",
-                StartTime = "09:00",
-                EndTime = "10:30"
-            });
-            TodayLogs.Add(new TimeLogEntry
-            {
-                TaskTitle = "Team meeting",
-                ProjectName = "General",
-                Duration = "45m",
-                StartTime = "11:00",
-                EndTime = "11:45"
-            });
+                TodayLogs.Add(new TimeLogEntry
+                {
+                    TaskTitle = entry.Task?.Title ?? "Unknown",
+                    ProjectName = entry.Task?.Project?.Title ?? "",
+                    Duration = FormatDuration(entry.Duration),
+                    StartTime = entry.StartTime.ToString("HH:mm"),
+                    EndTime = entry.EndTime?.ToString("HH:mm") ?? "..."
+                });
+            }
         }
 
         private void ToggleTimer()
@@ -101,7 +117,7 @@ namespace diplom.viewmodels
             _timer.Start();
         }
 
-        private void StopTimer()
+        private async void StopTimer()
         {
             _timer.Stop();
             IsTimerRunning = false;
@@ -109,6 +125,21 @@ namespace diplom.viewmodels
             if (SelectedTask != null)
             {
                 var elapsed = DateTime.Now - _startTime;
+
+                // Save to API
+                try
+                {
+                    var entry = new TimeEntry
+                    {
+                        TaskId = SelectedTask.Id,
+                        StartTime = _startTime.ToUniversalTime(),
+                        EndTime = DateTime.UtcNow,
+                        IsManual = false
+                    };
+                    await _api.PostAsync<TimeEntry>("/api/timeentries", entry);
+                }
+                catch { /* silently fail for now */ }
+
                 TodayLogs.Insert(0, new TimeLogEntry
                 {
                     TaskTitle = SelectedTask.Title,

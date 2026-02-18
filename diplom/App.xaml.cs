@@ -8,41 +8,55 @@ namespace diplom
 {
     public partial class App : Application
     {
-        private views.SplashScreen? _splashScreen;
-
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            // Show splash screen
-            _splashScreen = new views.SplashScreen();
-            _splashScreen.Show();
+            // Prevent auto-shutdown when LoginWindow closes
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            // Show login screen first
+            var loginWindow = new LoginWindow();
+            var result = loginWindow.ShowDialog();
+
+            if (result != true || !loginWindow.IsLoggedIn)
+            {
+                Shutdown();
+                return;
+            }
+
+            // Show splash screen while loading data
+            var splash = new views.SplashScreen();
+            splash.Show();
+
+            // Load data and show main window
+            LoadAndShowMainWindow(splash);
+        }
+
+        private async void LoadAndShowMainWindow(views.SplashScreen splash)
+        {
             try
             {
-                // Load all data
                 await AppDataService.Instance.LoadAllDataAsync();
-                
-                // Small delay so user sees "ready" status
                 await Task.Delay(300);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Ошибка загрузки данных:\n{ex.Message}\n\nПриложение продолжит работу без данных.",
-                    "Ошибка",
+                    $"Error loading data:\n{ex.Message}\n\nApplication will continue without data.",
+                    "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
             }
 
-            // Show main window
             var mainWindow = new MainWindow();
             MainWindow = mainWindow;
             mainWindow.Show();
 
-            // Close splash
-            _splashScreen.Close();
-            _splashScreen = null;
+            // Now that MainWindow is shown, switch to normal shutdown behavior
+            ShutdownMode = ShutdownMode.OnLastWindowClose;
+
+            splash.Close();
         }
     }
 }
