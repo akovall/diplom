@@ -36,8 +36,8 @@ namespace diplom.Services
         public string? Token { get; private set; }
         public int UserId { get; private set; }
         public string Username { get; private set; } = string.Empty;
-        public string FullName { get; private set; } = string.Empty;
-        public string JobTitle { get; private set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string JobTitle { get; set; } = string.Empty;
         public string Role { get; private set; } = string.Empty;
         public bool IsAuthenticated => !string.IsNullOrEmpty(Token);
 
@@ -144,6 +144,12 @@ namespace diplom.Services
             var response = await _http.PostAsJsonAsync($"{BaseUrl}{endpoint}", data, _jsonOptions);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+
+        public async Task<bool> PutAsync(string endpoint, object data)
+        {
+            var response = await _http.PutAsJsonAsync($"{BaseUrl}{endpoint}", data, _jsonOptions);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<T?> PutAsync<T>(string endpoint, object data)

@@ -60,6 +60,7 @@ namespace diplom.viewmodels
         public string ProjectName { get; set; } = string.Empty;
         public int ProjectId { get; set; }
         public DateTime? Deadline { get; set; }
+        public int? AssigneeId { get; set; }
 
         public IRelayCommand ToggleTimerCommand { get; set; }
         public IRelayCommand EditCommand { get; set; }

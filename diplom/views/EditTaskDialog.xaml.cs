@@ -1,5 +1,8 @@
+using diplom.Models;
+using diplom.Services;
 using diplom.viewmodels;
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -34,6 +37,25 @@ namespace diplom.views
                     break;
                 }
             }
+
+            // Set Assignees
+            var isManagerOrAdmin = ApiClient.Instance.Role is "Admin" or "Manager";
+            if (isManagerOrAdmin)
+            {
+                var users = AppDataService.Instance.Users;
+                AssigneeComboBox.ItemsSource = users;
+                AssigneeComboBox.SelectedItem = users.FirstOrDefault(u => u.Id == Task.AssigneeId);
+            }
+            else
+            {
+                // Employee: only self
+                var users = new System.Collections.Generic.List<User> { 
+                    new User { Id = ApiClient.Instance.UserId, FullName = ApiClient.Instance.FullName } 
+                };
+                AssigneeComboBox.ItemsSource = users;
+                AssigneeComboBox.SelectedItem = users[0];
+                AssigneeComboBox.IsEnabled = false;
+            }
         }
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -58,6 +80,11 @@ namespace diplom.views
             if (PriorityComboBox.SelectedItem is ComboBoxItem priorityItem)
             {
                 Task.Priority = int.Parse(priorityItem.Tag?.ToString() ?? "1");
+            }
+
+            if (AssigneeComboBox.SelectedItem is User assignee)
+            {
+                Task.AssigneeId = assignee.Id;
             }
 
             WasSaved = true;

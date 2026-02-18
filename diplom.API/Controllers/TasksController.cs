@@ -118,6 +118,7 @@ namespace diplom.API.Controllers
             existing.Deadline = task.Deadline;
             existing.EstimatedHours = task.EstimatedHours;
             existing.ProjectId = task.ProjectId;
+            existing.AssigneeId = task.AssigneeId;
 
             await _context.SaveChangesAsync();
             return Ok(existing);

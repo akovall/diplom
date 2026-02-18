@@ -39,6 +39,10 @@
             <views:SettingsView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type vm:UsersViewModel}">
+            <views:UsersView/>
+        </DataTemplate>
+
     </Window.Resources>
 
     <Border Background="{DynamicResource PrimaryBackground}" CornerRadius="12" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
@@ -115,6 +119,19 @@
 
                             <RadioButton Content="{DynamicResource MenuTimeTracker}" Style="{StaticResource MenuButtonStyle}"
                                          Command="{Binding NavigateCommand}" CommandParameter="TimeTracker"/>
+
+                            <RadioButton Content="{DynamicResource MenuUsers}" 
+                                         Command="{Binding NavigateCommand}" CommandParameter="Users">
+                                <RadioButton.Style>
+                                    <Style TargetType="RadioButton" BasedOn="{StaticResource MenuButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsAdminOrManager}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </RadioButton.Style>
+                            </RadioButton>
 
                             <RadioButton Content="{DynamicResource MenuSettings}" Style="{StaticResource MenuButtonStyle}" Margin="0,20,0,0"
                                          Command="{Binding NavigateCommand}" CommandParameter="Settings"/>

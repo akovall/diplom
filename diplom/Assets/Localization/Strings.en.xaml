@@ -10,6 +10,7 @@
     <sys:String x:Key="MenuTimeTracker">Time Tracker</sys:String>
     <sys:String x:Key="MenuAnalytics">Analytics</sys:String>
     <sys:String x:Key="MenuSettings">Settings</sys:String>
+    <sys:String x:Key="MenuUsers">Users</sys:String>
     <sys:String x:Key="MenuTheme">Theme</sys:String>
     <sys:String x:Key="WorkedToday">Worked Today</sys:String>
     <sys:String x:Key="TasksPlan">Tasks (Plan)</sys:String>

@@ -34,6 +34,8 @@ namespace diplom.viewmodels
         // Current user info for the header
         public string CurrentUserName => ApiClient.Instance.FullName;
         public string CurrentUserRole => ApiClient.Instance.Role;
+        public bool IsAdminOrManager => ApiClient.Instance.Role is "Admin" or "Manager";
+
         public string UserInitials
         {
             get
@@ -89,6 +91,10 @@ namespace diplom.viewmodels
                 case "Settings":
                     CurrentView = new SettingsViewModel();
                     CurrentPageTitle = "Settings";
+                    break;
+                case "Users":
+                    CurrentView = new UsersViewModel();
+                    CurrentPageTitle = "Users";
                     break;
             }
         }

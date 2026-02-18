@@ -180,6 +180,7 @@ namespace diplom.viewmodels
                 ProjectName = task.Project?.Title ?? "No Project",
                 ProjectId = task.ProjectId,
                 Deadline = task.Deadline,
+                AssigneeId = task.AssigneeId,
                 IsActive = false,
                 OnStatusChanged = OnTaskStatusChanged
             };
@@ -222,6 +223,7 @@ namespace diplom.viewmodels
                     dbTask.Status = _taskService.MapStringToStatus(displayItem.Status);
                     dbTask.Priority = (TaskPriority)displayItem.Priority;
                     dbTask.Deadline = displayItem.Deadline;
+                    dbTask.AssigneeId = displayItem.AssigneeId;
 
                     await _dataService.UpdateTaskAsync(dbTask);
                 }
