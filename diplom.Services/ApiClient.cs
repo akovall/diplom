@@ -37,6 +37,7 @@ namespace diplom.Services
         public int UserId { get; private set; }
         public string Username { get; private set; } = string.Empty;
         public string FullName { get; private set; } = string.Empty;
+        public string JobTitle { get; private set; } = string.Empty;
         public string Role { get; private set; } = string.Empty;
         public bool IsAuthenticated => !string.IsNullOrEmpty(Token);
 
@@ -82,6 +83,7 @@ namespace diplom.Services
             UserId = result.UserId;
             Username = result.Username;
             FullName = result.FullName;
+            JobTitle = result.JobTitle;
             Role = result.Role;
             SetAuthHeader();
             return true;
@@ -111,6 +113,7 @@ namespace diplom.Services
             UserId = result.UserId;
             Username = result.Username;
             FullName = result.FullName;
+            JobTitle = result.JobTitle;
             Role = result.Role;
             SetAuthHeader();
             return (true, string.Empty);
@@ -122,6 +125,7 @@ namespace diplom.Services
             UserId = 0;
             Username = string.Empty;
             FullName = string.Empty;
+            JobTitle = string.Empty;
             Role = string.Empty;
             _http.DefaultRequestHeaders.Authorization = null;
         }
@@ -162,6 +166,7 @@ namespace diplom.Services
             public int UserId { get; set; }
             public string Username { get; set; } = string.Empty;
             public string FullName { get; set; } = string.Empty;
+            public string JobTitle { get; set; } = string.Empty;
             public string Role { get; set; } = string.Empty;
         }
     }

@@ -30,6 +30,22 @@ namespace diplom.viewmodels
             get => _themeIcon;
             set => SetProperty(ref _themeIcon, value);
         }
+
+        // Current user info for the header
+        public string CurrentUserName => ApiClient.Instance.FullName;
+        public string CurrentUserRole => ApiClient.Instance.Role;
+        public string UserInitials
+        {
+            get
+            {
+                var name = ApiClient.Instance.FullName;
+                if (string.IsNullOrWhiteSpace(name)) return "?";
+                var parts = name.Trim().Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+                return parts.Length >= 2
+                    ? $"{parts[0][0]}{parts[1][0]}".ToUpper()
+                    : name[0].ToString().ToUpper();
+            }
+        }
         public MainViewModel()
         {
             CurrentView = new DashboardViewModel();

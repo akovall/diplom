@@ -2,25 +2,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using diplom.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace diplom.viewmodels
 {
     public class SettingsViewModel : ObservableObject
     {
-        private LanguageOption _selectedLanguage;
-        public LanguageOption SelectedLanguage
-        {
-            get => _selectedLanguage;
-            set
-            {
-                if (SetProperty(ref _selectedLanguage, value) && value != null)
-                {
-                    LocalizationService.SetLanguage(value.Code);
-                }
-            }
-        }
+        // === Profile ===
+        public string FullName => ApiClient.Instance.FullName;
+        public string Username => ApiClient.Instance.Username;
+        public string Role => ApiClient.Instance.Role;
+        public string JobTitle => ApiClient.Instance.JobTitle;
+        public string UserInitials => GetInitials(ApiClient.Instance.FullName);
 
+        // === Theme ===
         private bool _isDarkTheme;
         public bool IsDarkTheme
         {
@@ -37,9 +33,23 @@ namespace diplom.viewmodels
 
         public string ThemeIcon => IsDarkTheme ? "🌙" : "☀️";
 
-        public ObservableCollection<LanguageOption> AvailableLanguages { get; } = new ObservableCollection<LanguageOption>();
+        // === Language ===
+        private LanguageOption _selectedLanguage;
+        public LanguageOption SelectedLanguage
+        {
+            get => _selectedLanguage;
+            set
+            {
+                if (SetProperty(ref _selectedLanguage, value) && value != null)
+                    LocalizationService.SetLanguage(value.Code);
+            }
+        }
 
+        public ObservableCollection<LanguageOption> AvailableLanguages { get; } = new();
+
+        // === Commands ===
         public ICommand ToggleThemeCommand { get; }
+        public ICommand LogoutCommand { get; }
 
         public SettingsViewModel()
         {
@@ -59,6 +69,24 @@ namespace diplom.viewmodels
             }
 
             ToggleThemeCommand = new RelayCommand(() => IsDarkTheme = !IsDarkTheme);
+            LogoutCommand = new RelayCommand(Logout);
+        }
+
+        private void Logout()
+        {
+            ApiClient.Instance.Logout();
+            System.Diagnostics.Process.Start(
+                System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName!);
+            Application.Current.Shutdown();
+        }
+
+        private static string GetInitials(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName)) return "?";
+            var parts = fullName.Trim().Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length >= 2
+                ? $"{parts[0][0]}{parts[1][0]}".ToUpper()
+                : fullName[0].ToString().ToUpper();
         }
     }
 

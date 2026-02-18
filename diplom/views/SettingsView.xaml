@@ -11,134 +11,185 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel MaxWidth="600" HorizontalAlignment="Left">
-            
-            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
-                <Border.Effect>
-                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                </Border.Effect>
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource SettingsAppearance}" 
-                               Foreground="{DynamicResource PrimaryText}" 
-                               FontSize="18" 
-                               FontWeight="SemiBold" 
-                               Margin="0,0,0,20"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="600" HorizontalAlignment="Left">
 
-                    <Grid Margin="0,0,0,15">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource SettingsTheme}" 
-                                       Foreground="{DynamicResource PrimaryText}" 
-                                       FontSize="14" 
-                                       FontWeight="Medium"/>
-                            <TextBlock Text="{DynamicResource SettingsThemeDesc}" 
-                                       Foreground="{DynamicResource SecondaryText}" 
-                                       FontSize="12" 
-                                       Margin="0,4,0,0"/>
-                        </StackPanel>
+                <!-- Account / Profile -->
+                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Account"
+                                   Foreground="{DynamicResource PrimaryText}"
+                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="☀️" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            
-                            <Border Width="50" Height="26" CornerRadius="13" 
-                                    Background="{DynamicResource BorderBrush}" 
-                                    Cursor="Hand"
-                                    MouseLeftButtonDown="ThemeToggle_Click">
-                                <Border x:Name="ThemeToggleThumb" 
-                                        Width="22" Height="22" 
-                                        CornerRadius="11" 
-                                        Background="{DynamicResource AccentColor}"
-                                        HorizontalAlignment="Left"
-                                        Margin="2,0,0,0">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
-                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                                    <Setter Property="Margin" Value="0,0,2,0"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Avatar with initials -->
+                            <Border Width="52" Height="52" CornerRadius="26"
+                                    Background="{DynamicResource AccentColor}" Margin="0,0,16,0">
+                                <TextBlock Text="{Binding UserInitials}"
+                                           Foreground="White" FontSize="18" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            
-                            <TextBlock Text="🌙" FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-            </Border>
 
-            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
-                <Border.Effect>
-                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                </Border.Effect>
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource SettingsLanguageSection}" 
-                               Foreground="{DynamicResource PrimaryText}" 
-                               FontSize="18" 
-                               FontWeight="SemiBold" 
-                               Margin="0,0,0,20"/>
+                            <!-- User info -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding FullName}"
+                                           Foreground="{DynamicResource PrimaryText}"
+                                           FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Username}"
+                                           Foreground="{DynamicResource SecondaryText}"
+                                           FontSize="13" Margin="0,2,0,0"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <Border Background="{DynamicResource AccentColor}" CornerRadius="4" Padding="6,2">
+                                        <TextBlock Text="{Binding Role}" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding JobTitle}"
+                                               Foreground="{DynamicResource MutedText}"
+                                               FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="200"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource SettingsLanguage}" 
-                                       Foreground="{DynamicResource PrimaryText}" 
-                                       FontSize="14" 
-                                       FontWeight="Medium"/>
-                            <TextBlock Text="{DynamicResource SettingsLanguageDesc}" 
-                                       Foreground="{DynamicResource SecondaryText}" 
-                                       FontSize="12" 
-                                       Margin="0,4,0,0"/>
-                        </StackPanel>
-
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding AvailableLanguages}"
-                                  SelectedItem="{Binding SelectedLanguage}"
-                                  DisplayMemberPath="DisplayName"
-                                  Height="40"
-                                  VerticalAlignment="Center"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
-
-            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25">
-                <Border.Effect>
-                    <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                </Border.Effect>
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource SettingsAbout}" 
-                               Foreground="{DynamicResource PrimaryText}" 
-                               FontSize="18" 
-                               FontWeight="SemiBold" 
-                               Margin="0,0,0,20"/>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Text="{DynamicResource SettingsVersion}" 
-                                   Foreground="{DynamicResource SecondaryText}" 
-                                   FontSize="14"/>
-                        <TextBlock Text="1.0.0" 
-                                   Foreground="{DynamicResource PrimaryText}" 
-                                   FontSize="14" 
-                                   FontWeight="Medium"
-                                   Margin="5,0,0,0"/>
+                            <!-- Logout button -->
+                            <Button Grid.Column="2" Content="Logout"
+                                    Command="{Binding LogoutCommand}"
+                                    Height="36" Padding="16,0"
+                                    Background="Transparent"
+                                    Foreground="#E53E3E"
+                                    BorderBrush="#E53E3E" BorderThickness="1"
+                                    Cursor="Hand" VerticalAlignment="Center">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="8"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
                     </StackPanel>
+                </Border>
 
-                    <TextBlock Text="TimeFlow — Система управління часом та завданнями" 
-                               Foreground="{DynamicResource SecondaryText}" 
-                               FontSize="13"/>
-                </StackPanel>
-            </Border>
+                <!-- Appearance -->
+                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource SettingsAppearance}"
+                                   Foreground="{DynamicResource PrimaryText}"
+                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-        </StackPanel>
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource SettingsTheme}"
+                                           Foreground="{DynamicResource PrimaryText}"
+                                           FontSize="14" FontWeight="Medium"/>
+                                <TextBlock Text="{DynamicResource SettingsThemeDesc}"
+                                           Foreground="{DynamicResource SecondaryText}"
+                                           FontSize="12" Margin="0,4,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="☀️" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0"/>
+
+                                <Border Width="50" Height="26" CornerRadius="13"
+                                        Background="{DynamicResource BorderBrush}"
+                                        Cursor="Hand"
+                                        MouseLeftButtonDown="ThemeToggle_Click">
+                                    <Border x:Name="ThemeToggleThumb"
+                                            Width="22" Height="22"
+                                            CornerRadius="11"
+                                            Background="{DynamicResource AccentColor}"
+                                            HorizontalAlignment="Left"
+                                            Margin="2,0,0,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        <Setter Property="Margin" Value="0,0,2,0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                </Border>
+
+                                <TextBlock Text="🌙" FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Language -->
+                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource SettingsLanguageSection}"
+                                   Foreground="{DynamicResource PrimaryText}"
+                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource SettingsLanguage}"
+                                           Foreground="{DynamicResource PrimaryText}"
+                                           FontSize="14" FontWeight="Medium"/>
+                                <TextBlock Text="{DynamicResource SettingsLanguageDesc}"
+                                           Foreground="{DynamicResource SecondaryText}"
+                                           FontSize="12" Margin="0,4,0,0"/>
+                            </StackPanel>
+
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding AvailableLanguages}"
+                                      SelectedItem="{Binding SelectedLanguage}"
+                                      DisplayMemberPath="DisplayName"
+                                      Height="40" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- About -->
+                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource SettingsAbout}"
+                                   Foreground="{DynamicResource PrimaryText}"
+                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="{DynamicResource SettingsVersion}"
+                                       Foreground="{DynamicResource SecondaryText}" FontSize="14"/>
+                            <TextBlock Text="1.0.0"
+                                       Foreground="{DynamicResource PrimaryText}"
+                                       FontSize="14" FontWeight="Medium" Margin="5,0,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock Text="TimeFlow — Task and Time Management System"
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

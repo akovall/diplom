@@ -36,6 +36,7 @@ namespace diplom.Services
         public List<TaskItem> Tasks { get; private set; } = new();
         public List<Project> Projects { get; private set; } = new();
         public List<TimeEntry> TimeEntries { get; private set; } = new();
+        public List<User> Users { get; private set; } = new();
         
         // Loading state
         public bool IsLoaded { get; private set; } = false;
@@ -67,9 +68,16 @@ namespace diplom.Services
                 UpdateStatus("Loading tasks...");
                 Tasks = await _api.GetAsync<List<TaskItem>>("/api/tasks") ?? new();
 
-                // Load today's time entries from API
+                // Load time entries from API
                 UpdateStatus("Loading time entries...");
                 TimeEntries = await _api.GetAsync<List<TimeEntry>>("/api/timeentries/today") ?? new();
+
+                // Load assignable users (only for Manager/Admin)
+                if (_api.Role is "Admin" or "Manager")
+                {
+                    UpdateStatus("Loading users...");
+                    Users = await _api.GetAsync<List<User>>("/api/users/assignable") ?? new();
+                }
 
                 IsLoaded = true;
                 UpdateStatus("Ready!");

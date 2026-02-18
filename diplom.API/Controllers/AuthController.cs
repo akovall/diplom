@@ -82,6 +82,26 @@ namespace diplom.API.Controllers
             });
         }
 
+        // GET: api/auth/me
+        [HttpGet("me")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> Me()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            return Ok(new
+            {
+                user.Id,
+                user.Username,
+                user.FullName,
+                user.JobTitle,
+                Role = user.Role.ToString(),
+                user.IsActive
+            });
+        }
+
         private string GenerateJwtToken(User user)
         {
             var key = new SymmetricSecurityKey(

@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 namespace diplom.API.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
@@ -19,8 +18,9 @@ namespace diplom.API.Controllers
             _context = context;
         }
 
-        // GET: api/users
+        // GET: api/users — admin only
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<User>>> GetAll()
         {
             var users = await _context.Users
@@ -38,8 +38,22 @@ namespace diplom.API.Controllers
             return Ok(users);
         }
 
+        // GET: api/users/assignable — for Manager/Admin to populate assignee dropdown
+        [HttpGet("assignable")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> GetAssignable()
+        {
+            var users = await _context.Users
+                .Where(u => u.IsActive)
+                .Select(u => new { u.Id, u.FullName, u.JobTitle, Role = u.Role.ToString() })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
         // PUT: api/users/5/role
         [HttpPut("{id}/role")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeRole(int id, [FromBody] UserRole newRole)
         {
             var user = await _context.Users.FindAsync(id);
@@ -53,6 +67,7 @@ namespace diplom.API.Controllers
 
         // PUT: api/users/5/deactivate
         [HttpPut("{id}/deactivate")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Deactivate(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -66,6 +81,7 @@ namespace diplom.API.Controllers
 
         // PUT: api/users/5/activate
         [HttpPut("{id}/activate")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Activate(int id)
         {
             var user = await _context.Users.FindAsync(id);

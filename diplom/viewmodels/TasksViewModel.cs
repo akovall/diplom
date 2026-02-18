@@ -18,6 +18,13 @@ namespace diplom.viewmodels
 
         public ObservableCollection<TaskDisplayItem> Tasks { get; set; } = new();
         public ObservableCollection<Project> AvailableProjects { get; set; } = new();
+        public ObservableCollection<User> AvailableAssignees { get; set; } = new();
+
+        [ObservableProperty]
+        private User? _selectedAssignee;
+
+        // Employee can only assign to themselves
+        public bool CanChangeAssignee => ApiClient.Instance.Role is "Admin" or "Manager";
 
         [ObservableProperty]
         private string _searchQuery = string.Empty;
@@ -82,6 +89,7 @@ namespace diplom.viewmodels
 
             LoadProjectsFromCache();
             LoadTasksFromCache();
+            LoadAssigneesFromCache();
         }
 
         // === Partial methods for properties with side effects ===
@@ -101,6 +109,28 @@ namespace diplom.viewmodels
             {
                 SelectedProject = AvailableProjects.First();
             }
+        }
+
+        private void LoadAssigneesFromCache()
+        {
+            AvailableAssignees.Clear();
+            if (CanChangeAssignee)
+            {
+                // Manager/Admin: show all assignable users
+                foreach (var user in _dataService.Users)
+                    AvailableAssignees.Add(user);
+            }
+            else
+            {
+                // Employee: only themselves
+                var self = new User
+                {
+                    Id = ApiClient.Instance.UserId,
+                    FullName = ApiClient.Instance.FullName
+                };
+                AvailableAssignees.Add(self);
+            }
+            SelectedAssignee = AvailableAssignees.FirstOrDefault();
         }
 
         private void LoadTasksFromCache()
@@ -217,9 +247,8 @@ namespace diplom.viewmodels
             NewTaskDeadline = null;
             NewTaskEstimatedHours = 0;
             if (AvailableProjects.Any())
-            {
                 SelectedProject = AvailableProjects.First();
-            }
+            SelectedAssignee = AvailableAssignees.FirstOrDefault();
         }
 
         public void ExecuteCreateTask() => _ = CreateTaskAsync();
@@ -248,7 +277,8 @@ namespace diplom.viewmodels
                     Status = AppTaskStatus.ToDo,
                     ProjectId = SelectedProject.Id,
                     Deadline = NewTaskDeadline,
-                    EstimatedHours = NewTaskEstimatedHours
+                    EstimatedHours = NewTaskEstimatedHours,
+                    AssigneeId = SelectedAssignee?.Id
                 };
 
                 var created = await _dataService.CreateTaskAsync(newTask);

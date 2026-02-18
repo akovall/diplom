@@ -114,6 +114,15 @@
                                    Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
                         <TextBox Text="{Binding NewTaskEstimatedHours, UpdateSourceTrigger=PropertyChanged}" 
                                  Height="42" FontSize="14"/>
+
+                        <!-- Assignee -->
+                        <TextBlock Text="Assignee"
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,16,0,6"/>
+                        <ComboBox ItemsSource="{Binding AvailableAssignees}"
+                                  SelectedItem="{Binding SelectedAssignee}"
+                                  DisplayMemberPath="FullName"
+                                  IsEnabled="{Binding CanChangeAssignee}"
+                                  Height="42"/>
                     </StackPanel>
                 </ScrollViewer>
 

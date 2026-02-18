@@ -133,8 +133,18 @@
                             <TextBlock Text="{Binding CurrentPageTitle}" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryText}"/>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBlock Text="Admin" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource MutedText}"/>
-                                <Ellipse Width="35" Height="35" Fill="{DynamicResource AvatarBrush}"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0" HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding CurrentUserName}" 
+                                               HorizontalAlignment="Right"
+                                               Foreground="{DynamicResource PrimaryText}" FontSize="13" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding CurrentUserRole}" 
+                                               HorizontalAlignment="Right"
+                                               Foreground="{DynamicResource MutedText}" FontSize="11"/>
+                                </StackPanel>
+                                <Border Width="35" Height="35" CornerRadius="17" Background="{DynamicResource AccentColor}">
+                                    <TextBlock Text="{Binding UserInitials}" Foreground="White" FontSize="13" FontWeight="Bold"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                             </StackPanel>
                         </Grid>
                     </Border>
