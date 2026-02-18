@@ -1,195 +1,222 @@
 <UserControl x:Class="diplom.views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="1000">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1100">
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel MaxWidth="600" HorizontalAlignment="Left">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel>
 
-                <!-- Account / Profile -->
-                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Account"
-                                   Foreground="{DynamicResource PrimaryText}"
-                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+            <!-- Account — full width -->
+            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="Account"
+                               Foreground="{DynamicResource PrimaryText}"
+                               FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                            <!-- Avatar with initials -->
-                            <Border Width="52" Height="52" CornerRadius="26"
-                                    Background="{DynamicResource AccentColor}" Margin="0,0,16,0">
-                                <TextBlock Text="{Binding UserInitials}"
-                                           Foreground="White" FontSize="18" FontWeight="Bold"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
+                        <!-- Avatar -->
+                        <Border Width="52" Height="52" CornerRadius="26"
+                                Background="{DynamicResource AccentColor}" Margin="0,0,16,0">
+                            <TextBlock Text="{Binding UserInitials}"
+                                       Foreground="White" FontSize="18" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
 
-                            <!-- User info -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding FullName}"
-                                           Foreground="{DynamicResource PrimaryText}"
-                                           FontSize="16" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding Username}"
-                                           Foreground="{DynamicResource SecondaryText}"
-                                           FontSize="13" Margin="0,2,0,0"/>
-                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                    <Border Background="{DynamicResource AccentColor}" CornerRadius="4" Padding="6,2">
-                                        <TextBlock Text="{Binding Role}" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
-                                    </Border>
-                                    <TextBlock Text="{Binding JobTitle}"
-                                               Foreground="{DynamicResource MutedText}"
-                                               FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                </StackPanel>
+                        <!-- User info -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding FullName}"
+                                       Foreground="{DynamicResource PrimaryText}"
+                                       FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Username}"
+                                       Foreground="{DynamicResource SecondaryText}"
+                                       FontSize="13" Margin="0,2,0,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <Border Background="{DynamicResource AccentColor}" CornerRadius="4" Padding="6,2">
+                                    <TextBlock Text="{Binding Role}" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                                </Border>
+                                <TextBlock Text="{Binding JobTitle}"
+                                           Foreground="{DynamicResource MutedText}"
+                                           FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/>
                             </StackPanel>
+                        </StackPanel>
 
-                            <!-- Logout button -->
-                            <Button Grid.Column="2" Content="Logout"
-                                    Command="{Binding LogoutCommand}"
-                                    Height="36" Padding="16,0"
-                                    Background="Transparent"
-                                    Foreground="#E53E3E"
-                                    BorderBrush="#E53E3E" BorderThickness="1"
-                                    Cursor="Hand" VerticalAlignment="Center">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="8"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                        </Grid>
-                    </StackPanel>
-                </Border>
+                        <!-- Logout -->
+                        <Button Grid.Column="2" Content="Logout"
+                                Command="{Binding LogoutCommand}"
+                                Height="36" Padding="16,0"
+                                Background="Transparent"
+                                Foreground="#E53E3E"
+                                BorderBrush="#E53E3E" BorderThickness="1"
+                                Cursor="Hand" VerticalAlignment="Center">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 2-column row: Appearance + Language -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
                 <!-- Appearance -->
-                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                    </Border.Effect>
+                <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource SettingsAppearance}"
                                    Foreground="{DynamicResource PrimaryText}"
                                    FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+                        <StackPanel>
+                            <!-- Theme Row -->
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                        <Grid Margin="0,0,0,15">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,15,0">
+                                    <TextBlock Text="{DynamicResource SettingsTheme}"
+                                               Foreground="{DynamicResource PrimaryText}"
+                                               FontSize="14" FontWeight="Medium"/>
+                                    <TextBlock Text="{DynamicResource SettingsThemeDesc}"
+                                               Foreground="{DynamicResource SecondaryText}"
+                                               FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
 
-                            <StackPanel>
-                                <TextBlock Text="{DynamicResource SettingsTheme}"
-                                           Foreground="{DynamicResource PrimaryText}"
-                                           FontSize="14" FontWeight="Medium"/>
-                                <TextBlock Text="{DynamicResource SettingsThemeDesc}"
-                                           Foreground="{DynamicResource SecondaryText}"
-                                           FontSize="12" Margin="0,4,0,0"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="☀️" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0"/>
-
-                                <Border Width="50" Height="26" CornerRadius="13"
-                                        Background="{DynamicResource BorderBrush}"
-                                        Cursor="Hand"
-                                        MouseLeftButtonDown="ThemeToggle_Click">
-                                    <Border x:Name="ThemeToggleThumb"
-                                            Width="22" Height="22"
-                                            CornerRadius="11"
-                                            Background="{DynamicResource AccentColor}"
-                                            HorizontalAlignment="Left"
-                                            Margin="2,0,0,0">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="☀️" FontSize="18" VerticalAlignment="Center" Margin="0,0,10,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
-                                                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                                                        <Setter Property="Margin" Value="0,0,2,0"/>
+                                                    <DataTrigger Binding="{Binding IsDarkTheme}" Value="False">
+                                                        <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Border.Style>
-                                    </Border>
-                                </Border>
+                                        </TextBlock.Style>
+                                    </TextBlock>
 
-                                <TextBlock Text="🌙" FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            </StackPanel>
-                        </Grid>
+                                    <!-- Toggle Switch -->
+                                    <CheckBox IsChecked="{Binding IsDarkTheme, Mode=TwoWay}" VerticalAlignment="Center" Cursor="Hand">
+                                        <CheckBox.Template>
+                                            <ControlTemplate TargetType="CheckBox">
+                                                <Border x:Name="Track" Width="46" Height="24" CornerRadius="12" Background="#4A5568">
+                                                    <Border x:Name="Thumb" Width="20" Height="20" CornerRadius="10" Background="White"
+                                                            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2">
+                                                        <Border.RenderTransform>
+                                                            <TranslateTransform x:Name="ThumbTranslate" X="0"/>
+                                                        </Border.RenderTransform>
+                                                    </Border>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Trigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetName="ThumbTranslate" Storyboard.TargetProperty="X" To="22" Duration="0:0:0.2">
+                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+                                                                    <ColorAnimation Storyboard.TargetName="Track" Storyboard.TargetProperty="Background.Color" To="#2BD4BD" Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.EnterActions>
+                                                        <Trigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetName="ThumbTranslate" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.2">
+                                                                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+                                                                    <ColorAnimation Storyboard.TargetName="Track" Storyboard.TargetProperty="Background.Color" To="#4A5568" Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.ExitActions>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </CheckBox.Template>
+                                    </CheckBox>
+
+                                    <TextBlock Text="🌙" FontSize="18" VerticalAlignment="Center" Margin="10,0,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource AccentColor}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <!-- Language -->
-                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25" Margin="0,0,0,20">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                    </Border.Effect>
+                <Border Grid.Column="2" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource SettingsLanguageSection}"
                                    Foreground="{DynamicResource PrimaryText}"
                                    FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="200"/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel>
-                                <TextBlock Text="{DynamicResource SettingsLanguage}"
-                                           Foreground="{DynamicResource PrimaryText}"
-                                           FontSize="14" FontWeight="Medium"/>
-                                <TextBlock Text="{DynamicResource SettingsLanguageDesc}"
-                                           Foreground="{DynamicResource SecondaryText}"
-                                           FontSize="12" Margin="0,4,0,0"/>
-                            </StackPanel>
-
-                            <ComboBox Grid.Column="1"
-                                      ItemsSource="{Binding AvailableLanguages}"
-                                      SelectedItem="{Binding SelectedLanguage}"
-                                      DisplayMemberPath="DisplayName"
-                                      Height="40" VerticalAlignment="Center"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- About -->
-                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.05" BlurRadius="15" ShadowDepth="2"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="{DynamicResource SettingsAbout}"
+                        <TextBlock Text="{DynamicResource SettingsLanguage}"
                                    Foreground="{DynamicResource PrimaryText}"
-                                   FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+                                   FontSize="14" FontWeight="Medium"/>
+                        <TextBlock Text="{DynamicResource SettingsLanguageDesc}"
+                                   Foreground="{DynamicResource SecondaryText}"
+                                   FontSize="12" Margin="0,4,0,16"/>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                            <TextBlock Text="{DynamicResource SettingsVersion}"
-                                       Foreground="{DynamicResource SecondaryText}" FontSize="14"/>
-                            <TextBlock Text="1.0.0"
-                                       Foreground="{DynamicResource PrimaryText}"
-                                       FontSize="14" FontWeight="Medium" Margin="5,0,0,0"/>
-                        </StackPanel>
-
-                        <TextBlock Text="TimeFlow — Task and Time Management System"
-                                   Foreground="{DynamicResource SecondaryText}" FontSize="13"/>
+                        <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                                  SelectedItem="{Binding SelectedLanguage}"
+                                  DisplayMemberPath="DisplayName"
+                                  Height="40"/>
                     </StackPanel>
                 </Border>
+            </Grid>
 
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+            <!-- About — full width -->
+            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="25"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="{DynamicResource SettingsAbout}"
+                               Foreground="{DynamicResource PrimaryText}"
+                               FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="{DynamicResource SettingsVersion}"
+                                   Foreground="{DynamicResource SecondaryText}" FontSize="14"/>
+                        <TextBlock Text="1.0.0"
+                                   Foreground="{DynamicResource PrimaryText}"
+                                   FontSize="14" FontWeight="Medium" Margin="5,0,0,0"/>
+                    </StackPanel>
+
+                    <TextBlock Text="TimeFlow — Task and Time Management System"
+                               Foreground="{DynamicResource SecondaryText}" FontSize="13"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

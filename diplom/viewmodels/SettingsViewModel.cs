@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using diplom.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -25,7 +26,11 @@ namespace diplom.viewmodels
             {
                 if (SetProperty(ref _isDarkTheme, value))
                 {
-                    ThemeService.SetTheme(value ? "Dark" : "Light");
+                    // Defer ResourceDictionary swap to after the click event chain completes.
+                    // Without this, the swap happens mid-click and WPF reverts IsChecked.
+                    Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        () => ThemeService.SetTheme(value ? "Dark" : "Light"));
                     OnPropertyChanged(nameof(ThemeIcon));
                 }
             }

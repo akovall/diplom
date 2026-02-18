@@ -16,6 +16,14 @@ namespace diplom.views
             UsernameBox.Focus();
         }
 
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+        private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
+                DragMove();
+        }
+
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             var username = UsernameBox.Text.Trim();

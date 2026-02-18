@@ -21,7 +21,7 @@ namespace diplom.viewmodels
         public ObservableCollection<User> AvailableAssignees { get; set; } = new();
 
         [ObservableProperty]
-        private User? _selectedAssignee;
+        private User _selectedAssignee;
 
         // Employee can only assign to themselves
         public bool CanChangeAssignee => ApiClient.Instance.Role is "Admin" or "Manager";
