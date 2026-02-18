@@ -16,22 +16,8 @@ namespace diplom.viewmodels
         public string Role => ApiClient.Instance.Role;
         public string UserInitials => GetInitials(ApiClient.Instance.FullName);
 
-        private string _fullName = ApiClient.Instance.FullName ?? string.Empty;
-        public string FullName
-        {
-            get => _fullName;
-            set => SetProperty(ref _fullName, value);
-        }
-
-        private string _jobTitle = ApiClient.Instance.JobTitle ?? string.Empty;
-        public string JobTitle
-        {
-            get => _jobTitle;
-            set => SetProperty(ref _jobTitle, value);
-        }
-
-        [ObservableProperty]
-        private bool _isEditingProfile;
+        public string FullName => ApiClient.Instance.FullName ?? string.Empty;
+        public string JobTitle => ApiClient.Instance.JobTitle ?? string.Empty;
 
         // === Theme ===
         private bool _isDarkTheme;
@@ -71,9 +57,6 @@ namespace diplom.viewmodels
         // === Commands ===
         public ICommand ToggleThemeCommand { get; }
         public ICommand LogoutCommand { get; }
-        public IAsyncRelayCommand SaveProfileCommand { get; }
-        public ICommand EditProfileCommand { get; }
-        public ICommand CancelEditCommand { get; }
         public ICommand ChangePasswordCommand { get; }
 
         public SettingsViewModel()
@@ -95,41 +78,12 @@ namespace diplom.viewmodels
 
             ToggleThemeCommand = new RelayCommand(() => IsDarkTheme = !IsDarkTheme);
             LogoutCommand = new RelayCommand(Logout);
-            EditProfileCommand = new RelayCommand(() => IsEditingProfile = true);
-            CancelEditCommand = new RelayCommand(CancelEdit);
-            SaveProfileCommand = new AsyncRelayCommand(SaveProfileAsync);
             ChangePasswordCommand = new RelayCommand(ChangePassword);
-        }
-
-        private void CancelEdit()
-        {
-            FullName = ApiClient.Instance.FullName;
-            JobTitle = ApiClient.Instance.JobTitle;
-            IsEditingProfile = false;
-        }
-
-        private async Task SaveProfileAsync()
-        {
-            try
-            {
-                var success = await ApiClient.Instance.PutAsync("/api/auth/profile", new { FullName, JobTitle });
-                if (success)
-                {
-                    ApiClient.Instance.FullName = FullName;
-                    ApiClient.Instance.JobTitle = JobTitle;
-                    IsEditingProfile = false;
-                    OnPropertyChanged(nameof(UserInitials));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to update profile: " + ex.Message);
-            }
         }
 
         private void ChangePassword()
         {
-            MessageBox.Show("Change password feature coming soon.");
+            MessageBox.Show("A request to change your password has been sent to the administrator.", "Request Sent", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void Logout()

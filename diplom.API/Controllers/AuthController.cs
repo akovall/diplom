@@ -54,6 +54,7 @@ namespace diplom.API.Controllers
                 UserId = user.Id,
                 Username = user.Username,
                 FullName = user.FullName,
+                JobTitle = user.JobTitle,
                 Role = user.Role.ToString()
             });
         }
@@ -79,6 +80,7 @@ namespace diplom.API.Controllers
                 UserId = user.Id,
                 Username = user.Username,
                 FullName = user.FullName,
+                JobTitle = user.JobTitle,
                 Role = user.Role.ToString()
             });
         }

@@ -33,80 +33,26 @@
                         </Border>
 
                         <!-- User info -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Grid Grid.Column="1" VerticalAlignment="Center" Margin="10,0">
                             <!-- View Mode -->
                             <StackPanel x:Name="ProfileViewPanel">
-                                <TextBlock Text="{Binding FullName}" Foreground="{DynamicResource PrimaryText}" FontSize="16" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding Username}" Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,2,0,0"/>
-                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                    <Border Background="{DynamicResource AccentColor}" CornerRadius="4" Padding="6,2">
+                                <TextBlock Text="{Binding FullName}" Foreground="{DynamicResource PrimaryText}" FontSize="18" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Username}" Foreground="{DynamicResource SecondaryText}" FontSize="13" Margin="0,2,0,4"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="{DynamicResource AccentColor}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Role}" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
                                     </Border>
-                                    <TextBlock Text="{Binding JobTitle}" Foreground="{DynamicResource MutedText}" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <TextBlock Text="{Binding JobTitle}" Foreground="{DynamicResource MutedText}" FontSize="13" 
+                                               VerticalAlignment="Center" Margin="8,0,0,0"
+                                               Opacity="0.8"/>
                                 </StackPanel>
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditingProfile}" Value="True">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
                             </StackPanel>
-
-                            <!-- Edit Mode -->
-                            <StackPanel x:Name="ProfileEditPanel" Visibility="Collapsed">
-                                <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" Height="32" Padding="8,4" 
-                                         VerticalContentAlignment="Center" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource HoverBrush}" Foreground="{DynamicResource PrimaryText}"/>
-                                <TextBox Text="{Binding JobTitle, UpdateSourceTrigger=PropertyChanged}" Height="32" Padding="8,4" 
-                                         VerticalContentAlignment="Center" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource HoverBrush}" Foreground="{DynamicResource PrimaryText}"/>
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditingProfile}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                            </StackPanel>
-                        </StackPanel>
-
-                        <!-- Actions Area -->
+                        </Grid>
+                        
+                        <!-- Actions Area (Password/Logout buttons) -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="Edit Profile" Command="{Binding EditProfileCommand}" Margin="0,0,10,0" Height="36" Padding="15,0"
-                                        Background="{DynamicResource HoverBrush}" Foreground="{DynamicResource PrimaryText}"/>
-                                <Button Content="Change Password" Command="{Binding ChangePasswordCommand}" Margin="0,0,10,0" Height="36" Padding="15,0"
-                                        Background="Transparent" Foreground="{DynamicResource SecondaryText}"/>
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditingProfile}" Value="True">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                            </StackPanel>
-
-                            <!-- Editing Actions -->
-                            <StackPanel Orientation="Horizontal" Visibility="Collapsed">
-                                <Button Content="Save" Command="{Binding SaveProfileCommand}" Margin="0,0,10,0" Height="36" Width="80"
-                                        Background="{DynamicResource AccentColor}" Foreground="White" BorderThickness="0" Cursor="Hand"/>
-                                <Button Content="Cancel" Command="{Binding CancelEditCommand}" Margin="0,0,10,0" Height="36" Width="80"
-                                        Background="Transparent" Foreground="{DynamicResource MutedText}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Cursor="Hand"/>
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditingProfile}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
-                            </StackPanel>
+                            <Button Content="Change Password" Command="{Binding ChangePasswordCommand}" Height="36" Padding="15,0"
+                                    Background="Transparent" Foreground="{DynamicResource SecondaryText}" Margin="0,0,10,0"/>
 
                             <!-- Logout -->
                             <Button Content="Logout" Command="{Binding LogoutCommand}" Height="36" Padding="16,0"
@@ -114,15 +60,6 @@
                                 <Button.Resources>
                                     <Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style>
                                 </Button.Resources>
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsEditingProfile}" Value="True">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
                             </Button>
                         </StackPanel>
                     </Grid>
