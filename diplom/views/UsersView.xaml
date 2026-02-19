@@ -68,23 +68,56 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Background="{DynamicResource BorderBrush}" CornerRadius="4" Padding="8,4" Margin="0,0,10,0">
-                                    <TextBlock Text="{Binding Role}" Foreground="{DynamicResource PrimaryText}" FontSize="11" FontWeight="SemiBold"/>
-                                </Border>
-                                <Ellipse Width="8" Height="8" Margin="0,0,5,0">
-                                    <Ellipse.Style>
-                                        <Style TargetType="Ellipse">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                    <Setter Property="Fill" Value="#48BB78"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsActive}" Value="False">
-                                                    <Setter Property="Fill" Value="#E53E3E"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Ellipse.Style>
-                                </Ellipse>
+                                <!-- Role Selection Dropdown -->
+                                <ComboBox ItemsSource="{Binding DataContext.AvailableRoles, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          SelectedItem="{Binding Role, Mode=TwoWay}"
+                                          SelectionChanged="Role_SelectionChanged"
+                                          Background="Transparent" BorderThickness="0" Padding="0" Margin="0,0,10,0" Cursor="Hand">
+                                    <ComboBox.Template>
+                                        <ControlTemplate TargetType="ComboBox">
+                                            <Grid>
+                                                <Border Background="{DynamicResource BorderBrush}" CornerRadius="4" Padding="8,4">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Role}" Foreground="{DynamicResource PrimaryText}" FontSize="11" FontWeight="SemiBold"/>
+                                                        <TextBlock Text=" ▾" Foreground="{DynamicResource MutedText}" FontSize="9" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ToggleButton x:Name="ToggleButton" Background="Transparent" BorderThickness="0" 
+                                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                              ClickMode="Press"/>
+                                                <Popup x:Name="PART_Popup" AllowsTransparency="True" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
+                                                    <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4" MinWidth="100">
+                                                        <ItemsPresenter/>
+                                                    </Border>
+                                                </Popup>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </ComboBox.Template>
+                                </ComboBox>
+
+                                <!-- Status Toggle Button -->
+                                <Button Command="{Binding DataContext.ToggleUserStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Ellipse Width="10" Height="10" Margin="5">
+                                                <Ellipse.Style>
+                                                    <Style TargetType="Ellipse">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                                <Setter Property="Fill" Value="#48BB78"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                                <Setter Property="Fill" Value="#E53E3E"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Ellipse.Style>
+                                            </Ellipse>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

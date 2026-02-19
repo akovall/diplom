@@ -23,16 +23,4 @@ namespace diplom.API.DTOs
         public string JobTitle { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
     }
-
-    public class UpdateProfileRequest
-    {
-        public string FullName { get; set; } = string.Empty;
-        public string JobTitle { get; set; } = string.Empty;
-    }
-
-    public class ChangePasswordRequest
-    {
-        public string CurrentPassword { get; set; } = string.Empty;
-        public string NewPassword { get; set; } = string.Empty;
-    }
 }

@@ -83,7 +83,8 @@ namespace diplom.viewmodels
 
         private void ChangePassword()
         {
-            MessageBox.Show("A request to change your password has been sent to the administrator.", "Request Sent", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Password changes are restricted. Please contact your administrator to request a password reset.", 
+                "Administrative Policy", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void Logout()
