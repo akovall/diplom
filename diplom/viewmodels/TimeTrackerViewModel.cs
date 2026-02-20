@@ -13,9 +13,8 @@ namespace diplom.viewmodels
     public class TimeTrackerViewModel : ObservableObject
     {
         private readonly AppDataService _dataService;
-        private readonly ApiClient _api;
+        private readonly ITimeTrackingService _timeTrackingService;
         private DispatcherTimer _timer;
-        private DateTime _startTime;
 
         private string _elapsedTime = "00:00:00";
         public string ElapsedTime
@@ -52,7 +51,7 @@ namespace diplom.viewmodels
         public TimeTrackerViewModel()
         {
             _dataService = AppDataService.Instance;
-            _api = ApiClient.Instance;
+            _timeTrackingService = TimeTrackingService.Instance;
 
             ToggleTimerCommand = new RelayCommand(ToggleTimer);
 
@@ -89,7 +88,7 @@ namespace diplom.viewmodels
                 {
                     TaskTitle = entry.Task?.Title ?? "Unknown",
                     ProjectName = entry.Task?.Project?.Title ?? "",
-                    Duration = FormatDuration(entry.Duration),
+                    Duration = _timeTrackingService.FormatTimeSpan(entry.Duration),
                     StartTime = entry.StartTime.ToString("HH:mm"),
                     EndTime = entry.EndTime?.ToString("HH:mm") ?? "..."
                 });
@@ -112,7 +111,16 @@ namespace diplom.viewmodels
         {
             if (SelectedTask == null) return;
 
-            _startTime = DateTime.Now;
+            try
+            {
+                _timeTrackingService.Start(SelectedTask.Id);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Failed to start timer: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
             IsTimerRunning = true;
             _timer.Start();
         }
@@ -120,50 +128,45 @@ namespace diplom.viewmodels
         private async void StopTimer()
         {
             _timer.Stop();
-            IsTimerRunning = false;
 
             if (SelectedTask != null)
             {
-                var elapsed = DateTime.Now - _startTime;
-
-                // Save to API
                 try
                 {
-                    var entry = new TimeEntry
+                    var entry = await _timeTrackingService.StopActiveAsync();
+                    if (entry?.EndTime != null)
                     {
-                        TaskId = SelectedTask.Id,
-                        StartTime = _startTime.ToUniversalTime(),
-                        EndTime = DateTime.UtcNow,
-                        IsManual = false
-                    };
-                    await _api.PostAsync<TimeEntry>("/api/timeentries", entry);
+                        var elapsed = entry.EndTime.Value - entry.StartTime;
+                        TodayLogs.Insert(0, new TimeLogEntry
+                        {
+                            TaskTitle = SelectedTask.Title,
+                            ProjectName = SelectedTask.ProjectName,
+                            Duration = _timeTrackingService.FormatTimeSpan(elapsed),
+                            StartTime = entry.StartTime.ToLocalTime().ToString("HH:mm"),
+                            EndTime = entry.EndTime.Value.ToLocalTime().ToString("HH:mm")
+                        });
+                    }
                 }
-                catch { /* silently fail for now */ }
-
-                TodayLogs.Insert(0, new TimeLogEntry
+                catch (Exception ex)
                 {
-                    TaskTitle = SelectedTask.Title,
-                    ProjectName = SelectedTask.ProjectName,
-                    Duration = FormatDuration(elapsed),
-                    StartTime = _startTime.ToString("HH:mm"),
-                    EndTime = DateTime.Now.ToString("HH:mm")
-                });
+                    // Keep UX consistent with existing tracker style: avoid hard crash but show reason.
+                    System.Windows.MessageBox.Show($"Failed to stop timer: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    _timer.Start();
+                    return;
+                }
             }
 
+            IsTimerRunning = false;
             ElapsedTime = "00:00:00";
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            var elapsed = DateTime.Now - _startTime;
-            ElapsedTime = elapsed.ToString(@"hh\:mm\:ss");
-        }
+            if (!_timeTrackingService.ActiveStartTimeLocal.HasValue)
+                return;
 
-        private string FormatDuration(TimeSpan duration)
-        {
-            if (duration.TotalHours >= 1)
-                return $"{(int)duration.TotalHours}h {duration.Minutes}m";
-            return $"{duration.Minutes}m";
+            var elapsed = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal.Value;
+            ElapsedTime = _timeTrackingService.FormatTimeSpan(elapsed);
         }
     }
 

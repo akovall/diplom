@@ -194,5 +194,21 @@ namespace diplom.Services
             
             return updated ?? task;
         }
+
+        public async Task<TimeEntry> CreateTimeEntryAsync(TimeEntry entry)
+        {
+            var created = await _api.PostAsync<TimeEntry>("/api/timeentries", entry);
+            if (created != null)
+            {
+                TimeEntries.Insert(0, created);
+                var task = Tasks.FirstOrDefault(t => t.Id == created.TaskId);
+                if (task != null)
+                {
+                    task.TimeEntries ??= new List<TimeEntry>();
+                    task.TimeEntries.Add(created);
+                }
+            }
+            return created ?? entry;
+        }
     }
 }

@@ -62,7 +62,21 @@ namespace diplom.viewmodels
         public DateTime? Deadline { get; set; }
         public int? AssigneeId { get; set; }
 
-        public IRelayCommand ToggleTimerCommand { get; set; }
+        private DateTime? _activeStartTime;
+        public DateTime? ActiveStartTime
+        {
+            get => _activeStartTime;
+            set => SetProperty(ref _activeStartTime, value);
+        }
+
+        private TimeSpan _accumulatedTime;
+        public TimeSpan AccumulatedTime
+        {
+            get => _accumulatedTime;
+            set => SetProperty(ref _accumulatedTime, value);
+        }
+
+        public ICommand ToggleTimerCommand { get; set; }
         public IRelayCommand EditCommand { get; set; }
         public IRelayCommand DeleteCommand { get; set; }
         

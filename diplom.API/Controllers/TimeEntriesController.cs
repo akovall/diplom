@@ -57,11 +57,25 @@ namespace diplom.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TimeEntry>> Create([FromBody] TimeEntry entry)
         {
+            var userId = GetCurrentUserId();
+            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            var isAdminOrManager = role is "Admin" or "Manager";
+
+            var task = await _context.Tasks.FindAsync(entry.TaskId);
+            if (task == null)
+                return BadRequest(new { message = "Task not found" });
+
+            if (!isAdminOrManager && task.AssigneeId != userId)
+                return Forbid();
+
             // Always set UserId from JWT token (not from request body)
-            entry.UserId = GetCurrentUserId();
+            entry.UserId = userId;
 
             if (entry.StartTime == default)
                 entry.StartTime = DateTime.UtcNow;
+
+            if (entry.EndTime.HasValue && entry.EndTime.Value < entry.StartTime)
+                return BadRequest(new { message = "EndTime cannot be earlier than StartTime" });
 
             _context.TimeLogs.Add(entry);
             await _context.SaveChangesAsync();

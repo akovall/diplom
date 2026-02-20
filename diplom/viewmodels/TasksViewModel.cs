@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace diplom.viewmodels
 {
@@ -69,27 +70,137 @@ namespace diplom.viewmodels
         private ObservableCollection<TaskDisplayItem> _allTasks = new();
         private readonly AppDataService _dataService;
         private readonly ITaskService _taskService;
+        private readonly ITimeTrackingService _timeTrackingService;
         private readonly IDialogService _dialogService;
+        private DispatcherTimer _activeTimer;
 
         public TasksViewModel()
             : this(
                 new ApiTaskService(),
-                new DialogService())
+                new DialogService(),
+                TimeTrackingService.Instance)
         {
         }
 
-        public TasksViewModel(ITaskService taskService, IDialogService dialogService)
+        public TasksViewModel(ITaskService taskService, IDialogService dialogService, ITimeTrackingService timeTrackingService)
         {
             _dataService = AppDataService.Instance;
             _taskService = taskService;
             _dialogService = dialogService;
+            _timeTrackingService = timeTrackingService;
 
             CreateTaskCommand = new RelayCommand(OpenCreateDialog);
             DeleteTaskCommand = new AsyncRelayCommand<TaskDisplayItem>(DeleteTaskAsync);
 
+            _activeTimer = new DispatcherTimer();
+            _activeTimer.Interval = TimeSpan.FromSeconds(1);
+            _activeTimer.Tick += ActiveTimer_Tick;
+
             LoadProjectsFromCache();
             LoadTasksFromCache();
             LoadAssigneesFromCache();
+        }
+
+        private void ActiveTimer_Tick(object? sender, EventArgs e)
+        {
+            if (!_timeTrackingService.HasActiveSession || !_timeTrackingService.ActiveTaskId.HasValue || !_timeTrackingService.ActiveStartTimeLocal.HasValue)
+                return;
+
+            var activeTask = _allTasks.FirstOrDefault(t => t.Id == _timeTrackingService.ActiveTaskId.Value);
+            if (activeTask != null)
+            {
+                var currentSession = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal.Value;
+                var total = activeTask.AccumulatedTime + currentSession;
+                activeTask.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(total);
+            }
+        }
+
+        private async Task ToggleTimerAsync(TaskDisplayItem item)
+        {
+            if (item == null) return;
+
+            if (_timeTrackingService.HasActiveSession && _timeTrackingService.ActiveTaskId == item.Id)
+            {
+                try
+                {
+                    var created = await _timeTrackingService.StopActiveAsync();
+                    if (created?.EndTime != null)
+                    {
+                        var sessionDuration = created.EndTime.Value - created.StartTime;
+                        if (sessionDuration > TimeSpan.Zero)
+                            item.AccumulatedTime += sessionDuration;
+                    }
+
+                    item.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(item.AccumulatedTime);
+                    item.IsActive = false;
+                    item.ActiveStartTime = null;
+                    _activeTimer.Stop();
+                }
+                catch (Exception ex)
+                {
+                    _dialogService.ShowError($"Failed to stop timer: {ex.Message}");
+                }
+            }
+            else
+            {
+                if (_timeTrackingService.HasActiveSession && _timeTrackingService.ActiveTaskId.HasValue)
+                {
+                    var currentlyActive = _allTasks.FirstOrDefault(t => t.Id == _timeTrackingService.ActiveTaskId.Value);
+                    if (currentlyActive != null)
+                    {
+                        try
+                        {
+                            var created = await _timeTrackingService.StopActiveAsync();
+                            if (created?.EndTime != null)
+                            {
+                                var sessionDuration = created.EndTime.Value - created.StartTime;
+                                if (sessionDuration > TimeSpan.Zero)
+                                    currentlyActive.AccumulatedTime += sessionDuration;
+                            }
+
+                            currentlyActive.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(currentlyActive.AccumulatedTime);
+                            currentlyActive.IsActive = false;
+                            currentlyActive.ActiveStartTime = null;
+                        }
+                        catch (Exception ex)
+                        {
+                            _dialogService.ShowError($"Failed to switch timer: {ex.Message}");
+                            return;
+                        }
+                    }
+                }
+
+                _timeTrackingService.Start(item.Id);
+                item.IsActive = true;
+                item.ActiveStartTime = _timeTrackingService.ActiveStartTimeLocal;
+                _activeTimer.Start();
+            }
+        }
+
+        private void SyncActiveTaskState()
+        {
+            foreach (var task in _allTasks)
+            {
+                task.IsActive = false;
+                task.ActiveStartTime = null;
+                task.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(task.AccumulatedTime);
+            }
+
+            if (_timeTrackingService.HasActiveSession && _timeTrackingService.ActiveTaskId.HasValue)
+            {
+                var activeTask = _allTasks.FirstOrDefault(t => t.Id == _timeTrackingService.ActiveTaskId.Value);
+                if (activeTask != null)
+                {
+                    activeTask.IsActive = true;
+                    activeTask.ActiveStartTime = _timeTrackingService.ActiveStartTimeLocal;
+                    var currentSession = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal!.Value;
+                    activeTask.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(activeTask.AccumulatedTime + currentSession);
+                    _activeTimer.Start();
+                    return;
+                }
+            }
+
+            _activeTimer.Stop();
         }
 
         // === Partial methods for properties with side effects ===
@@ -148,6 +259,8 @@ namespace diplom.viewmodels
                 _allTasks.Add(displayItem);
                 Tasks.Add(displayItem);
             }
+
+            SyncActiveTaskState();
         }
 
         [RelayCommand]
@@ -176,16 +289,17 @@ namespace diplom.viewmodels
                 Description = task.Description,
                 Priority = (int)task.Priority,
                 Status = _taskService.MapStatusToString(task.Status),
-                TimeSpentFormatted = _taskService.FormatTimeSpan(timeSpent),
+                TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(timeSpent),
                 ProjectName = task.Project?.Title ?? "No Project",
                 ProjectId = task.ProjectId,
                 Deadline = task.Deadline,
                 AssigneeId = task.AssigneeId,
                 IsActive = false,
+                AccumulatedTime = timeSpent,
                 OnStatusChanged = OnTaskStatusChanged
             };
 
-            item.ToggleTimerCommand = new RelayCommand(() => item.IsActive = !item.IsActive);
+            item.ToggleTimerCommand = new AsyncRelayCommand(() => ToggleTimerAsync(item));
             item.EditCommand = new RelayCommand(() => RequestEditTask?.Invoke(this, item));
             item.DeleteCommand = new AsyncRelayCommand(async () => await DeleteTaskAsync(item));
 
@@ -307,11 +421,23 @@ namespace diplom.viewmodels
 
             try
             {
+                if (_timeTrackingService.HasActiveSession && _timeTrackingService.ActiveTaskId == task.Id)
+                {
+                    var created = await _timeTrackingService.StopActiveAsync("Timer stopped because task was deleted");
+                    if (created?.EndTime != null)
+                    {
+                        var sessionDuration = created.EndTime.Value - created.StartTime;
+                        if (sessionDuration > TimeSpan.Zero)
+                            task.AccumulatedTime += sessionDuration;
+                    }
+                }
+
                 var success = await _dataService.DeleteTaskAsync(task.Id);
                 if (success)
                 {
                     _allTasks.Remove(task);
                     Tasks.Remove(task);
+                    _activeTimer.Stop();
                 }
             }
             catch (Exception ex)
