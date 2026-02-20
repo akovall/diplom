@@ -71,7 +71,8 @@ namespace diplom.viewmodels
         private void LoadDataFromCache()
         {
             AvailableTasks.Clear();
-            foreach (var task in _dataService.Tasks.Where(t => t.Status != Models.enums.AppTaskStatus.Done))
+            var userId = ApiClient.Instance.UserId;
+            foreach (var task in _dataService.Tasks.Where(t => t.Status != Models.enums.AppTaskStatus.Done && t.AssigneeId == userId))
             {
                 AvailableTasks.Add(new TrackerTaskItem
                 {
@@ -82,16 +83,16 @@ namespace diplom.viewmodels
             }
 
             TodayLogs.Clear();
-            foreach (var entry in _dataService.TimeEntries)
+            foreach (var entry in _dataService.TimeEntries.OrderBy(e => e.StartTime))
             {
-                TodayLogs.Add(new TimeLogEntry
-                {
-                    TaskTitle = entry.Task?.Title ?? "Unknown",
-                    ProjectName = entry.Task?.Project?.Title ?? "",
-                    Duration = _timeTrackingService.FormatTimeSpan(entry.Duration),
-                    StartTime = entry.StartTime.ToString("HH:mm"),
-                    EndTime = entry.EndTime?.ToString("HH:mm") ?? "..."
-                });
+                var task = entry.Task ?? _dataService.Tasks.FirstOrDefault(t => t.Id == entry.TaskId);
+                UpsertTodayLog(
+                    entry.TaskId,
+                    task?.Title ?? $"Task #{entry.TaskId}",
+                    task?.Project?.Title ?? string.Empty,
+                    entry.Duration,
+                    entry.StartTime.ToLocalTime(),
+                    entry.EndTime?.ToLocalTime());
             }
         }
 
@@ -137,14 +138,13 @@ namespace diplom.viewmodels
                     if (entry?.EndTime != null)
                     {
                         var elapsed = entry.EndTime.Value - entry.StartTime;
-                        TodayLogs.Insert(0, new TimeLogEntry
-                        {
-                            TaskTitle = SelectedTask.Title,
-                            ProjectName = SelectedTask.ProjectName,
-                            Duration = _timeTrackingService.FormatTimeSpan(elapsed),
-                            StartTime = entry.StartTime.ToLocalTime().ToString("HH:mm"),
-                            EndTime = entry.EndTime.Value.ToLocalTime().ToString("HH:mm")
-                        });
+                        UpsertTodayLog(
+                            SelectedTask.Id,
+                            SelectedTask.Title,
+                            SelectedTask.ProjectName,
+                            elapsed,
+                            entry.StartTime.ToLocalTime(),
+                            entry.EndTime.Value.ToLocalTime());
                     }
                 }
                 catch (Exception ex)
@@ -168,6 +168,41 @@ namespace diplom.viewmodels
             var elapsed = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal.Value;
             ElapsedTime = _timeTrackingService.FormatTimeSpan(elapsed);
         }
+
+        private void UpsertTodayLog(int taskId, string taskTitle, string projectName, TimeSpan duration, DateTime startLocal, DateTime? endLocal)
+        {
+            var existing = TodayLogs.FirstOrDefault(l => l.TaskId == taskId);
+            if (existing == null)
+            {
+                TodayLogs.Insert(0, new TimeLogEntry
+                {
+                    TaskId = taskId,
+                    TaskTitle = taskTitle,
+                    ProjectName = projectName,
+                    TotalDuration = duration,
+                    Duration = _timeTrackingService.FormatTimeSpan(duration),
+                    StartTime = startLocal.ToString("HH:mm"),
+                    EndTime = endLocal?.ToString("HH:mm") ?? "..."
+                });
+                return;
+            }
+
+            existing.TotalDuration += duration;
+            existing.Duration = _timeTrackingService.FormatTimeSpan(existing.TotalDuration);
+
+            if (DateTime.TryParse(existing.StartTime, out var existingStart))
+            {
+                var minStart = existingStart.TimeOfDay <= startLocal.TimeOfDay ? existingStart : startLocal;
+                existing.StartTime = minStart.ToString("HH:mm");
+            }
+            else
+            {
+                existing.StartTime = startLocal.ToString("HH:mm");
+            }
+
+            if (endLocal.HasValue)
+                existing.EndTime = endLocal.Value.ToString("HH:mm");
+        }
     }
 
     public class TrackerTaskItem
@@ -179,10 +214,12 @@ namespace diplom.viewmodels
 
     public class TimeLogEntry
     {
+        public int TaskId { get; set; }
         public string TaskTitle { get; set; }
         public string ProjectName { get; set; }
         public string Duration { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public TimeSpan TotalDuration { get; set; }
     }
 }

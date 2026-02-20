@@ -71,6 +71,7 @@ namespace diplom.Services
                 // Load time entries from API
                 UpdateStatus("Loading time entries...");
                 TimeEntries = await _api.GetAsync<List<TimeEntry>>("/api/timeentries/today") ?? new();
+                AttachTaskReferencesToTimeEntries();
 
                 // Load assignable users (only for Manager/Admin)
                 if (_api.Role is "Admin" or "Manager")
@@ -104,6 +105,7 @@ namespace diplom.Services
         public async Task RefreshTasksAsync()
         {
             Tasks = await _api.GetAsync<List<TaskItem>>("/api/tasks") ?? new();
+            AttachTaskReferencesToTimeEntries();
             DataLoaded?.Invoke();
         }
 
@@ -200,8 +202,11 @@ namespace diplom.Services
             var created = await _api.PostAsync<TimeEntry>("/api/timeentries", entry);
             if (created != null)
             {
-                TimeEntries.Insert(0, created);
                 var task = Tasks.FirstOrDefault(t => t.Id == created.TaskId);
+                if (task != null)
+                    created.Task = task;
+
+                TimeEntries.Insert(0, created);
                 if (task != null)
                 {
                     task.TimeEntries ??= new List<TimeEntry>();
@@ -209,6 +214,19 @@ namespace diplom.Services
                 }
             }
             return created ?? entry;
+        }
+
+        private void AttachTaskReferencesToTimeEntries()
+        {
+            if (Tasks.Count == 0 || TimeEntries.Count == 0)
+                return;
+
+            var taskById = Tasks.ToDictionary(t => t.Id, t => t);
+            foreach (var entry in TimeEntries)
+            {
+                if (entry.Task == null && taskById.TryGetValue(entry.TaskId, out var task))
+                    entry.Task = task;
+            }
         }
     }
 }

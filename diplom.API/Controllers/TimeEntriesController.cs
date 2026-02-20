@@ -58,14 +58,12 @@ namespace diplom.API.Controllers
         public async Task<ActionResult<TimeEntry>> Create([FromBody] TimeEntry entry)
         {
             var userId = GetCurrentUserId();
-            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
-            var isAdminOrManager = role is "Admin" or "Manager";
 
             var task = await _context.Tasks.FindAsync(entry.TaskId);
             if (task == null)
                 return BadRequest(new { message = "Task not found" });
 
-            if (!isAdminOrManager && task.AssigneeId != userId)
+            if (task.AssigneeId != userId)
                 return Forbid();
 
             // Always set UserId from JWT token (not from request body)

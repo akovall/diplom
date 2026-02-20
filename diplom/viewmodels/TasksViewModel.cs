@@ -118,6 +118,11 @@ namespace diplom.viewmodels
         private async Task ToggleTimerAsync(TaskDisplayItem item)
         {
             if (item == null) return;
+            if (item.AssigneeId != ApiClient.Instance.UserId)
+            {
+                _dialogService.ShowWarning("You can track time only for tasks assigned to you.", "Access denied");
+                return;
+            }
 
             if (_timeTrackingService.HasActiveSession && _timeTrackingService.ActiveTaskId == item.Id)
             {
