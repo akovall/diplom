@@ -234,11 +234,11 @@ namespace diplom.viewmodels
         {
             return status switch
             {
-                AppTaskStatus.ToDo => "Pending",
+                AppTaskStatus.ToDo => "To Do",
                 AppTaskStatus.InProgress => "In Progress",
                 AppTaskStatus.OnHold => "On Hold",
                 AppTaskStatus.Done => "Done",
-                _ => "Pending"
+                _ => "To Do"
             };
         }
 
@@ -278,4 +278,3 @@ namespace diplom.viewmodels
         public string DeadlineText { get; set; } = string.Empty;
     }
 }
-

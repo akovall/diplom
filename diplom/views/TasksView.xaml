@@ -203,6 +203,7 @@
                                                  IsEnabled="{Binding CanEdit}">
                                             <sys:String>To Do</sys:String>
                                             <sys:String>In Progress</sys:String>
+                                            <sys:String>On Hold</sys:String>
                                             <sys:String>Done</sys:String>
                                             <ComboBox.ToolTip>
                                                 <ToolTip>
