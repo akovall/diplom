@@ -191,12 +191,42 @@
                                             </StackPanel>
                                         </Border>
 
+                                        <Border Background="{DynamicResource PrimaryBackground}" CornerRadius="4" Padding="8,4" Margin="0,0,15,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding ProjectName}" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
+                                                <TextBlock Text=" · " Foreground="{DynamicResource SecondaryText}" Margin="6,0"/>
+                                                <TextBlock Text="{Binding AssigneeName}" Foreground="{DynamicResource SecondaryText}" />
+                                            </StackPanel>
+                                        </Border>
+
                                         <ComboBox SelectedItem="{Binding Status}" Width="130" Height="32"
                                                  IsEnabled="{Binding CanEdit}">
                                             <sys:String>To Do</sys:String>
                                             <sys:String>In Progress</sys:String>
                                             <sys:String>Done</sys:String>
+                                            <ComboBox.ToolTip>
+                                                <ToolTip>
+                                                    <TextBlock Text="You can change status only for tasks assigned to you."/>
+                                                </ToolTip>
+                                            </ComboBox.ToolTip>
                                         </ComboBox>
+
+                                        <TextBlock Text="Locked"
+                                                   Foreground="{DynamicResource SecondaryText}"
+                                                   FontSize="12"
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding CanEdit}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Grid>
 
@@ -284,6 +314,11 @@
                                                     <Setter Property="Margin" Value="0"/>
                                                 </Style>
                                             </ContextMenu.Resources>
+                                            <MenuItem Header="{DynamicResource MenuDetails}" Command="{Binding DetailsCommand}"
+                                                      Foreground="{DynamicResource PrimaryText}"
+                                                      Background="{DynamicResource SurfaceBrush}"
+                                                      IsEnabled="{Binding CanViewDetails}"/>
+                                            <Separator Background="{DynamicResource BorderBrush}" Margin="0"/>
                                             <MenuItem Header="{DynamicResource MenuEdit}" Command="{Binding EditCommand}"
                                                       Foreground="{DynamicResource PrimaryText}"
                                                       Background="{DynamicResource SurfaceBrush}"

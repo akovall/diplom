@@ -18,6 +18,7 @@ namespace diplom.views
             {
                 vm.RequestOpenDialog += OnRequestOpenDialog;
                 vm.RequestEditTask += OnRequestEditTask;
+                vm.RequestViewTaskDetails += OnRequestViewTaskDetails;
             }
         }
 
@@ -60,6 +61,16 @@ namespace diplom.views
                     await vm.SaveTaskEditAsync(task);
                 }
             }
+        }
+
+        private void OnRequestViewTaskDetails(object sender, TaskDisplayItem task)
+        {
+            var dialog = new TaskDetailsDialog(task)
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            dialog.ShowDialog();
         }
 
         private void OptionsButton_Click(object sender, RoutedEventArgs e)

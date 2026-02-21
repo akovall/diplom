@@ -78,5 +78,6 @@
     <!-- Context Menu -->
     <sys:String x:Key="MenuEdit">Редагувати</sys:String>
     <sys:String x:Key="MenuDelete">Видалити</sys:String>
+    <sys:String x:Key="MenuDetails">Детальніше</sys:String>
 
 </ResourceDictionary>

@@ -55,8 +55,23 @@ namespace diplom.viewmodels
         public int Priority
         {
             get => _priority;
-            set => SetProperty(ref _priority, value);
+            set
+            {
+                if (SetProperty(ref _priority, value))
+                {
+                    OnPropertyChanged(nameof(PriorityText));
+                }
+            }
         }
+
+        public string PriorityText => Priority switch
+        {
+            0 => "Low",
+            1 => "Medium",
+            2 => "High",
+            3 => "Critical",
+            _ => "Medium"
+        };
 
         private string _status = "To Do";
         public string Status
@@ -64,7 +79,8 @@ namespace diplom.viewmodels
             get => _status;
             set
             {
-                if (SetProperty(ref _status, value))
+                var normalized = string.IsNullOrWhiteSpace(value) ? "To Do" : value;
+                if (SetProperty(ref _status, normalized))
                 {
                     OnStatusChanged?.Invoke(this);
                 }
@@ -88,6 +104,8 @@ namespace diplom.viewmodels
         public string ProjectName { get; set; } = string.Empty;
         public int ProjectId { get; set; }
         public DateTime? Deadline { get; set; }
+
+        public string DeadlineText => Deadline.HasValue ? Deadline.Value.ToString("dd.MM.yyyy HH:mm") : "—";
         public int? AssigneeId { get; set; }
 
         private DateTime? _activeStartTime;
@@ -107,6 +125,7 @@ namespace diplom.viewmodels
         public ICommand ToggleTimerCommand { get; set; }
         public IRelayCommand EditCommand { get; set; }
         public IRelayCommand DeleteCommand { get; set; }
+        public IRelayCommand DetailsCommand { get; set; }
         
         // Callback when status changes
         public Action<TaskDisplayItem> OnStatusChanged { get; set; }

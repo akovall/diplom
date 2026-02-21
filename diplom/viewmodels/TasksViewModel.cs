@@ -16,6 +16,7 @@ namespace diplom.viewmodels
         // Event to request opening dialog from View
         public event EventHandler RequestOpenDialog;
         public event EventHandler<TaskDisplayItem> RequestEditTask;
+        public event EventHandler<TaskDisplayItem> RequestViewTaskDetails;
 
         public ObservableCollection<TaskDisplayItem> Tasks { get; set; } = new();
         public ObservableCollection<Project> AvailableProjects { get; set; } = new();
@@ -36,7 +37,7 @@ namespace diplom.viewmodels
         [ObservableProperty]
         private string _selectedSortOption = "Priority";
 
-        public string[] SortOptions { get; } = new[] { "Priority", "Status", "Deadline", "Title" };
+        public string[] SortOptions { get; } = new[] { "Priority", "Status", "Deadline", "Title", "My Tasks" };
 
         // === Create Task Dialog Properties ===
         [ObservableProperty]
@@ -322,6 +323,7 @@ namespace diplom.viewmodels
                 }
                 RequestEditTask?.Invoke(this, item);
             });
+            item.DetailsCommand = new RelayCommand(() => RequestViewTaskDetails?.Invoke(this, item));
             item.DeleteCommand = new AsyncRelayCommand(async () => await DeleteTaskAsync(item));
 
             return item;
@@ -504,6 +506,9 @@ namespace diplom.viewmodels
 
             var filtered = _allTasks.AsEnumerable();
 
+            if (SelectedSortOption == "My Tasks")
+                filtered = filtered.Where(t => t.AssigneeId == ApiClient.Instance.UserId);
+
             if (!string.IsNullOrEmpty(SelectedStatusFilter) && SelectedStatusFilter != "All")
                 filtered = filtered.Where(t => t.Status == SelectedStatusFilter);
 
@@ -521,6 +526,7 @@ namespace diplom.viewmodels
                 "Status" => filtered.OrderBy(t => GetStatusOrder(t.Status)).ThenByDescending(t => t.Priority),
                 "Deadline" => filtered.OrderBy(t => t.Deadline ?? DateTime.MaxValue).ThenByDescending(t => t.Priority),
                 "Title" => filtered.OrderBy(t => t.Title).ThenByDescending(t => t.Priority),
+                "My Tasks" => filtered.OrderByDescending(t => t.Priority),
                 _ => filtered.OrderByDescending(t => t.Priority)
             };
 
