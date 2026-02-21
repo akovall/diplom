@@ -11,6 +11,7 @@
 
     <UserControl.Resources>
         <conv:StringIsNullOrEmptyConverter x:Key="StringIsNullOrEmptyConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid Margin="20">
@@ -190,7 +191,8 @@
                                             </StackPanel>
                                         </Border>
 
-                                        <ComboBox SelectedItem="{Binding Status}" Width="130" Height="32">
+                                        <ComboBox SelectedItem="{Binding Status}" Width="130" Height="32"
+                                                 IsEnabled="{Binding CanEdit}">
                                             <sys:String>To Do</sys:String>
                                             <sys:String>In Progress</sys:String>
                                             <sys:String>Done</sys:String>
@@ -284,11 +286,15 @@
                                             </ContextMenu.Resources>
                                             <MenuItem Header="{DynamicResource MenuEdit}" Command="{Binding EditCommand}"
                                                       Foreground="{DynamicResource PrimaryText}"
-                                                      Background="{DynamicResource SurfaceBrush}"/>
+                                                      Background="{DynamicResource SurfaceBrush}"
+                                                      IsEnabled="{Binding CanEdit}"
+                                                      Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                             <Separator Background="{DynamicResource BorderBrush}" Margin="0"/>
                                             <MenuItem Header="{DynamicResource MenuDelete}" Command="{Binding DeleteCommand}"
                                                       Foreground="#E53E3E"
-                                                      Background="{DynamicResource SurfaceBrush}"/>
+                                                      Background="{DynamicResource SurfaceBrush}"
+                                                      IsEnabled="{Binding CanDelete}"
+                                                      Visibility="{Binding CanDelete, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>

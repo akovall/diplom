@@ -25,6 +25,17 @@ namespace diplom.API.Controllers
             return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         }
 
+        private string GetCurrentUserRole()
+        {
+            return User.FindFirst(ClaimTypes.Role)?.Value ?? UserRole.Employee.ToString();
+        }
+
+        private bool IsAdminOrManager()
+        {
+            var role = GetCurrentUserRole();
+            return role is "Admin" or "Manager";
+        }
+
         // GET: api/tasks
         [HttpGet]
         public async Task<ActionResult<List<TaskItem>>> GetAll()
@@ -90,6 +101,15 @@ namespace diplom.API.Controllers
         [HttpPost]
         public async Task<ActionResult<TaskItem>> Create([FromBody] TaskItem task)
         {
+            var userId = GetCurrentUserId();
+            var isAdminOrManager = IsAdminOrManager();
+
+            if (!isAdminOrManager)
+            {
+                // Employees can create tasks only for themselves
+                task.AssigneeId = userId;
+            }
+
             task.CreatedAt = DateTime.UtcNow;
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
@@ -107,9 +127,19 @@ namespace diplom.API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<TaskItem>> Update(int id, [FromBody] TaskItem task)
         {
+            var userId = GetCurrentUserId();
+            var isAdminOrManager = IsAdminOrManager();
+
             var existing = await _context.Tasks.FindAsync(id);
             if (existing == null)
                 return NotFound();
+
+            if (!isAdminOrManager)
+            {
+                // Employees can edit only tasks assigned to themselves
+                if (existing.AssigneeId != userId)
+                    return Forbid();
+            }
 
             existing.Title = task.Title;
             existing.Description = task.Description;
@@ -117,8 +147,13 @@ namespace diplom.API.Controllers
             existing.Priority = task.Priority;
             existing.Deadline = task.Deadline;
             existing.EstimatedHours = task.EstimatedHours;
-            existing.ProjectId = task.ProjectId;
-            existing.AssigneeId = task.AssigneeId;
+
+            // Only Manager/Admin can reassign or move between projects
+            if (isAdminOrManager)
+            {
+                existing.ProjectId = task.ProjectId;
+                existing.AssigneeId = task.AssigneeId;
+            }
 
             await _context.SaveChangesAsync();
             return Ok(existing);
@@ -128,9 +163,18 @@ namespace diplom.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = GetCurrentUserId();
+            var isAdminOrManager = IsAdminOrManager();
+
             var task = await _context.Tasks.FindAsync(id);
             if (task == null)
                 return NotFound();
+
+            if (!isAdminOrManager)
+            {
+                if (task.AssigneeId != userId)
+                    return Forbid();
+            }
 
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();

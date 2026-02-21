@@ -8,6 +8,34 @@ namespace diplom.viewmodels
     public class TaskDisplayItem : ObservableObject
     {
         public int Id { get; set; }
+
+        private string _assigneeName = string.Empty;
+        public string AssigneeName
+        {
+            get => _assigneeName;
+            set => SetProperty(ref _assigneeName, value);
+        }
+
+        private bool _canEdit;
+        public bool CanEdit
+        {
+            get => _canEdit;
+            set => SetProperty(ref _canEdit, value);
+        }
+
+        private bool _canDelete;
+        public bool CanDelete
+        {
+            get => _canDelete;
+            set => SetProperty(ref _canDelete, value);
+        }
+
+        private bool _canViewDetails = true;
+        public bool CanViewDetails
+        {
+            get => _canViewDetails;
+            set => SetProperty(ref _canViewDetails, value);
+        }
         
         private string _title = string.Empty;
         public string Title

@@ -73,6 +73,7 @@ namespace diplom.viewmodels
         private readonly ITimeTrackingService _timeTrackingService;
         private readonly IDialogService _dialogService;
         private DispatcherTimer _activeTimer;
+        private bool _suppressStatusSave;
 
         public TasksViewModel()
             : this(
@@ -287,6 +288,9 @@ namespace diplom.viewmodels
 
         private TaskDisplayItem MapToDisplayItem(TaskItem task, TimeSpan timeSpent)
         {
+            var isAdminOrManager = ApiClient.Instance.Role is "Admin" or "Manager";
+            var canModify = isAdminOrManager || (task.AssigneeId.HasValue && task.AssigneeId.Value == ApiClient.Instance.UserId);
+
             var item = new TaskDisplayItem
             {
                 Id = task.Id,
@@ -299,24 +303,55 @@ namespace diplom.viewmodels
                 ProjectId = task.ProjectId,
                 Deadline = task.Deadline,
                 AssigneeId = task.AssigneeId,
+                AssigneeName = task.Assignee?.FullName ?? string.Empty,
+                CanEdit = canModify,
+                CanDelete = canModify,
+                CanViewDetails = true,
                 IsActive = false,
                 AccumulatedTime = timeSpent,
                 OnStatusChanged = OnTaskStatusChanged
             };
 
             item.ToggleTimerCommand = new AsyncRelayCommand(() => ToggleTimerAsync(item));
-            item.EditCommand = new RelayCommand(() => RequestEditTask?.Invoke(this, item));
+            item.EditCommand = new RelayCommand(() =>
+            {
+                if (!item.CanEdit)
+                {
+                    _dialogService.ShowWarning("You can edit only tasks assigned to you.", "Access denied");
+                    return;
+                }
+                RequestEditTask?.Invoke(this, item);
+            });
             item.DeleteCommand = new AsyncRelayCommand(async () => await DeleteTaskAsync(item));
 
             return item;
         }
 
-        private void OnTaskStatusChanged(TaskDisplayItem displayItem) => _ = SaveStatusAsync(displayItem);
+        private void OnTaskStatusChanged(TaskDisplayItem displayItem)
+        {
+            if (_suppressStatusSave)
+                return;
+
+            _ = SaveStatusAsync(displayItem);
+        }
 
         public async Task SaveStatusAsync(TaskDisplayItem displayItem)
         {
             try
             {
+                if (!displayItem.CanEdit)
+                {
+                    _dialogService.ShowWarning("You can edit only tasks assigned to you.", "Access denied");
+                    var dbTask = _dataService.Tasks.FirstOrDefault(t => t.Id == displayItem.Id);
+                    if (dbTask != null)
+                    {
+                        _suppressStatusSave = true;
+                        displayItem.Status = _taskService.MapStatusToString(dbTask.Status);
+                        _suppressStatusSave = false;
+                    }
+                    return;
+                }
+
                 var task = _dataService.Tasks.FirstOrDefault(t => t.Id == displayItem.Id);
                 if (task != null)
                 {
@@ -334,6 +369,12 @@ namespace diplom.viewmodels
         {
             try
             {
+                if (!displayItem.CanEdit)
+                {
+                    _dialogService.ShowWarning("You can edit only tasks assigned to you.", "Access denied");
+                    return;
+                }
+
                 var dbTask = _dataService.Tasks.Find(t => t.Id == displayItem.Id);
                 if (dbTask != null)
                 {
@@ -420,6 +461,12 @@ namespace diplom.viewmodels
         private async Task DeleteTaskAsync(TaskDisplayItem task)
         {
             if (task == null) return;
+
+            if (!task.CanDelete)
+            {
+                _dialogService.ShowWarning("You can delete only tasks assigned to you.", "Access denied");
+                return;
+            }
 
             if (!_dialogService.Confirm($"Are you sure you want to delete '{task.Title}'?", "Confirm Delete"))
                 return;
