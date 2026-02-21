@@ -53,6 +53,49 @@ namespace diplom.API.Controllers
                 .ToListAsync();
         }
 
+        // GET: api/timeentries/active — open entry for current user (if any)
+        [HttpGet("active")]
+        public async Task<ActionResult<TimeEntry>> GetActive()
+        {
+            var userId = GetCurrentUserId();
+            var entry = await _context.TimeLogs
+                .Include(e => e.Task)
+                .Where(e => e.UserId == userId && e.EndTime == null)
+                .OrderByDescending(e => e.StartTime)
+                .FirstOrDefaultAsync();
+
+            if (entry == null)
+                return NotFound();
+
+            return Ok(entry);
+        }
+
+        // POST: api/timeentries/stop-active — close current open entry
+        [HttpPost("stop-active")]
+        public async Task<ActionResult<TimeEntry>> StopActive([FromBody] StopActiveRequest request)
+        {
+            var userId = GetCurrentUserId();
+            var entry = await _context.TimeLogs
+                .Where(e => e.UserId == userId && e.EndTime == null)
+                .OrderByDescending(e => e.StartTime)
+                .FirstOrDefaultAsync();
+
+            if (entry == null)
+                return NotFound();
+
+            entry.EndTime = DateTime.UtcNow;
+            entry.Comment = request?.Comment ?? entry.Comment;
+            entry.IsManual = false;
+
+            await _context.SaveChangesAsync();
+
+            var created = await _context.TimeLogs
+                .Include(e => e.Task)
+                .FirstOrDefaultAsync(e => e.Id == entry.Id);
+
+            return Ok(created);
+        }
+
         // POST: api/timeentries
         [HttpPost]
         public async Task<ActionResult<TimeEntry>> Create([FromBody] TimeEntry entry)
@@ -114,5 +157,10 @@ namespace diplom.API.Controllers
             await _context.SaveChangesAsync();
             return Ok(existing);
         }
+    }
+
+    public sealed class StopActiveRequest
+    {
+        public string? Comment { get; set; }
     }
 }

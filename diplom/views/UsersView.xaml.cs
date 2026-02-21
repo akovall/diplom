@@ -30,5 +30,35 @@ namespace diplom.views
                 button.ContextMenu.IsOpen = true;
             }
         }
+
+        private void DeactivateAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not UsersViewModel vm)
+                return;
+
+            if (sender is not MenuItem mi)
+                return;
+
+            if (mi.DataContext is not UserDisplayItem user)
+                return;
+
+            if (user.IsActive)
+                vm.ToggleUserStatusCommand.Execute(user);
+        }
+
+        private void ActivateAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not UsersViewModel vm)
+                return;
+
+            if (sender is not MenuItem mi)
+                return;
+
+            if (mi.DataContext is not UserDisplayItem user)
+                return;
+
+            if (!user.IsActive)
+                vm.ToggleUserStatusCommand.Execute(user);
+        }
     }
 }

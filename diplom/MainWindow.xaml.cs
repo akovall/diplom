@@ -43,6 +43,16 @@ namespace diplom
 
         private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            try
+            {
+                if (TimeTrackingService.Instance.HasActiveSession)
+                    await TimeTrackingService.Instance.StopActiveAsync("Auto-stopped on app close");
+            }
+            catch
+            {
+                // best-effort
+            }
+
             await ApiClient.Instance.LogoutAsync();
         }
     }

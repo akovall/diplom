@@ -81,17 +81,22 @@ namespace diplom.Services
             if (!HasActiveSession)
                 return null;
 
-            TimeEntry? created;
-            if (_activeTimeEntryId.HasValue)
+            TimeEntry? created = null;
+
+            // Prefer closing the server-side open entry (works even if app restarted and ID is lost).
+            try
             {
-                created = await _api.PutAsync<TimeEntry>($"/api/timeentries/{_activeTimeEntryId.Value}", new
+                created = await _api.PostAsync<TimeEntry>("/api/timeentries/stop-active", new
                 {
-                    EndTime = DateTime.UtcNow,
-                    Comment = comment ?? string.Empty,
-                    IsManual = false
+                    Comment = comment ?? string.Empty
                 });
             }
-            else
+            catch
+            {
+                // ignore and fallback
+            }
+
+            if (created == null)
             {
                 var entry = new TimeEntry
                 {

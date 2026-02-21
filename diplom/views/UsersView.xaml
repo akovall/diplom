@@ -60,6 +60,18 @@
 
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding FullName}" Foreground="{DynamicResource PrimaryText}" FontWeight="SemiBold"/>
+                                <TextBlock Text="Deactivated" Foreground="{DynamicResource SecondaryText}" FontSize="11" Margin="0,2,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                                 <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                     <TextBlock Text="{Binding Username}" Foreground="{DynamicResource MutedText}" FontSize="12"/>
                                     <TextBlock Text=" • " Foreground="{DynamicResource MutedText}" FontSize="12"/>
@@ -148,13 +160,21 @@
                                                 </Style>
                                             </ContextMenu.Resources>
                                             <MenuItem Header="{DynamicResource MenuDeactivateAccount}"
-                                                      Command="{Binding DataContext.ToggleUserStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                      CommandParameter="{Binding}"
-                                                      Foreground="#E53E3E"
-                                                      Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                      Click="DeactivateAccount_Click"
+                                                      Foreground="#E53E3E">
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
                                             <MenuItem Header="{DynamicResource MenuActivateAccount}"
-                                                      Command="{Binding DataContext.ToggleUserStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                      CommandParameter="{Binding}"
+                                                      Click="ActivateAccount_Click"
                                                       Foreground="{DynamicResource PrimaryText}">
                                                 <MenuItem.Style>
                                                     <Style TargetType="MenuItem">

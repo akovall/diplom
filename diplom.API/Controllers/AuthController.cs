@@ -73,6 +73,19 @@ namespace diplom.API.Controllers
                 return Unauthorized(new { message = "Account is deactivated" });
 
             user.LastSeenUtc = DateTime.UtcNow;
+
+            // Safety: if app was closed/crashed while tracking, close any open sessions.
+            var openEntries = await _context.TimeLogs
+                .Where(e => e.UserId == user.Id && e.EndTime == null)
+                .ToListAsync();
+            foreach (var e in openEntries)
+            {
+                e.EndTime = DateTime.UtcNow;
+                e.Comment = string.IsNullOrWhiteSpace(e.Comment)
+                    ? "Auto-stopped on login"
+                    : $"{e.Comment} (auto-stopped on login)";
+            }
+
             await _context.SaveChangesAsync();
 
             var token = GenerateJwtToken(user);
