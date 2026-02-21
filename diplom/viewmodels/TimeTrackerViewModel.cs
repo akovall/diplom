@@ -66,6 +66,8 @@ namespace diplom.viewmodels
             {
                 LoadDataFromCache();
             }
+
+            RestoreActiveSessionFromService();
         }
 
         private void LoadDataFromCache()
@@ -94,6 +96,53 @@ namespace diplom.viewmodels
                     entry.StartTime.ToLocalTime(),
                     entry.EndTime?.ToLocalTime());
             }
+
+            RestoreActiveSessionFromService();
+        }
+
+        private void RestoreActiveSessionFromService()
+        {
+            if (!_timeTrackingService.HasActiveSession || !_timeTrackingService.ActiveTaskId.HasValue || !_timeTrackingService.ActiveStartTimeLocal.HasValue)
+            {
+                if (IsTimerRunning)
+                {
+                    IsTimerRunning = false;
+                    ElapsedTime = "00:00:00";
+                    _timer.Stop();
+                }
+                return;
+            }
+
+            var activeTaskId = _timeTrackingService.ActiveTaskId.Value;
+
+            // Try pick from already loaded tasks (assigned to current user)
+            var selected = AvailableTasks.FirstOrDefault(t => t.Id == activeTaskId);
+            if (selected == null)
+            {
+                var task = _dataService.Tasks.FirstOrDefault(t => t.Id == activeTaskId);
+                if (task != null)
+                {
+                    selected = new TrackerTaskItem
+                    {
+                        Id = task.Id,
+                        Title = task.Title,
+                        ProjectName = task.Project?.Title ?? "No Project"
+                    };
+                    AvailableTasks.Insert(0, selected);
+                }
+            }
+
+            if (selected != null)
+                SelectedTask = selected;
+
+            IsTimerRunning = true;
+
+            var elapsed = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal.Value;
+            if (elapsed < TimeSpan.Zero) elapsed = TimeSpan.Zero;
+            ElapsedTime = _timeTrackingService.FormatTimeSpan(elapsed);
+
+            if (!_timer.IsEnabled)
+                _timer.Start();
         }
 
         private void ToggleTimer()
