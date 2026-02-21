@@ -1,7 +1,9 @@
 .vs/
+.vscode/
 bin/
 obj/
 docs/
+.codex/
 instructions.txt
 TimeFlow_Backup.sql
 .env
