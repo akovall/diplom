@@ -72,6 +72,9 @@ namespace diplom.API.Controllers
             if (!user.IsActive)
                 return Unauthorized(new { message = "Account is deactivated" });
 
+            user.LastSeenUtc = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
             var token = GenerateJwtToken(user);
 
             return Ok(new AuthResponse

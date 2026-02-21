@@ -47,6 +47,7 @@ namespace diplom.viewmodels
         }
 
         private readonly DispatcherTimer _headerStatusTimer;
+        private readonly DispatcherTimer _presenceTimer;
 
         public string UserInitials
         {
@@ -71,6 +72,11 @@ namespace diplom.viewmodels
             _headerStatusTimer.Tick += (_, _) => UpdateHeaderStatus();
             _headerStatusTimer.Start();
             UpdateHeaderStatus();
+
+            _presenceTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+            _presenceTimer.Tick += async (_, _) => await SendPresenceHeartbeatAsync();
+            _presenceTimer.Start();
+            _ = SendPresenceHeartbeatAsync();
         }
 
         private void UpdateHeaderStatus()
@@ -80,6 +86,14 @@ namespace diplom.viewmodels
             CurrentUserStatusBrush = hasActive
                 ? new SolidColorBrush(Color.FromRgb(0x48, 0xBB, 0x78)) // green
                 : new SolidColorBrush(Color.FromRgb(0xF6, 0xAD, 0x55)); // yellow
+        }
+
+        private static async System.Threading.Tasks.Task SendPresenceHeartbeatAsync()
+        {
+            if (!ApiClient.Instance.IsAuthenticated)
+                return;
+
+            await ApiClient.Instance.PostAsync("/api/presence/heartbeat");
         }
         private void ToggleTheme()
         {

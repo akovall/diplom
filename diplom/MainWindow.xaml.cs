@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using diplom.Services;
 
 namespace diplom
 {
@@ -8,6 +9,7 @@ namespace diplom
         public MainWindow()
         {
             InitializeComponent();
+            Closing += MainWindow_Closing;
         }
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -37,6 +39,11 @@ namespace diplom
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            await ApiClient.Instance.LogoutAsync();
         }
     }
 }

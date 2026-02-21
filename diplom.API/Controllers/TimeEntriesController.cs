@@ -75,6 +75,14 @@ namespace diplom.API.Controllers
             if (entry.EndTime.HasValue && entry.EndTime.Value < entry.StartTime)
                 return BadRequest(new { message = "EndTime cannot be earlier than StartTime" });
 
+            // Do not allow multiple open entries per user
+            if (!entry.EndTime.HasValue)
+            {
+                var hasOpen = await _context.TimeLogs.AnyAsync(e => e.UserId == userId && e.EndTime == null, HttpContext.RequestAborted);
+                if (hasOpen)
+                    return Conflict(new { message = "There is already an active timer session." });
+            }
+
             _context.TimeLogs.Add(entry);
             await _context.SaveChangesAsync();
 

@@ -79,5 +79,7 @@
     <sys:String x:Key="MenuEdit">Edit</sys:String>
     <sys:String x:Key="MenuDelete">Delete</sys:String>
     <sys:String x:Key="MenuDetails">Details</sys:String>
+    <sys:String x:Key="MenuDeactivateAccount">Deactivate account</sys:String>
+    <sys:String x:Key="MenuActivateAccount">Activate account</sys:String>
 
 </ResourceDictionary>

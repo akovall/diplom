@@ -95,31 +95,80 @@
                                     </ComboBox.Template>
                                 </ComboBox>
 
-                                <!-- Status Toggle Button -->
-                                <Button Command="{Binding DataContext.ToggleUserStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"
-                                        Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Ellipse Width="10" Height="10" Margin="5">
-                                                <Ellipse.Style>
-                                                    <Style TargetType="Ellipse">
+                                <!-- 3-state status indicator (not clickable) -->
+                                <Ellipse Width="10" Height="10" Margin="5">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActivityState}" Value="Offline">
+                                                    <Setter Property="Fill" Value="#E53E3E"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ActivityState}" Value="OnlineIdle">
+                                                    <Setter Property="Fill" Value="#F6AD55"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ActivityState}" Value="OnlineActive">
+                                                    <Setter Property="Fill" Value="#48BB78"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+
+                                <!-- Options Menu (3 dots) -->
+                                <Button Width="28" Height="28"
+                                        Background="Transparent" BorderThickness="0"
+                                        VerticalAlignment="Center" Margin="6,0,0,0" Cursor="Hand"
+                                        Click="OptionsButton_Click">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="14"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <TextBlock Text="⋮" FontSize="16" FontWeight="Bold"
+                                               Foreground="{DynamicResource SecondaryText}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <Button.ContextMenu>
+                                        <ContextMenu Background="{DynamicResource SurfaceBrush}"
+                                                     BorderBrush="{DynamicResource BorderBrush}"
+                                                     Padding="0">
+                                            <ContextMenu.Resources>
+                                                <Style TargetType="MenuItem">
+                                                    <Setter Property="Padding" Value="12,8"/>
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </Style>
+                                            </ContextMenu.Resources>
+                                            <MenuItem Header="{DynamicResource MenuDeactivateAccount}"
+                                                      Command="{Binding DataContext.ToggleUserStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      CommandParameter="{Binding}"
+                                                      Foreground="#E53E3E"
+                                                      Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <MenuItem Header="{DynamicResource MenuActivateAccount}"
+                                                      Command="{Binding DataContext.ToggleUserStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                      CommandParameter="{Binding}"
+                                                      Foreground="{DynamicResource PrimaryText}">
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ActivityState}" Value="Offline">
-                                                                <Setter Property="Fill" Value="#E53E3E"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ActivityState}" Value="OnlineIdle">
-                                                                <Setter Property="Fill" Value="#F6AD55"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ActivityState}" Value="OnlineActive">
-                                                                <Setter Property="Fill" Value="#48BB78"/>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                                <Setter Property="Visibility" Value="Visible"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
-                                                </Ellipse.Style>
-                                            </Ellipse>
-                                        </ControlTemplate>
-                                    </Button.Template>
+                                                </MenuItem.Style>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
                                 </Button>
                             </StackPanel>
                         </Grid>

@@ -26,6 +26,8 @@ namespace diplom.Services
         }
 
         private readonly AppDataService _dataService;
+        private readonly ApiClient _api;
+        private int? _activeTimeEntryId;
 
         public int? ActiveTaskId { get; private set; }
         public DateTime? ActiveStartTimeLocal { get; private set; }
@@ -34,6 +36,7 @@ namespace diplom.Services
         public TimeTrackingService(AppDataService dataService)
         {
             _dataService = dataService;
+            _api = ApiClient.Instance;
         }
 
         public void Start(int taskId, DateTime? startTimeLocal = null)
@@ -46,6 +49,31 @@ namespace diplom.Services
 
             ActiveTaskId = taskId;
             ActiveStartTimeLocal = startTimeLocal ?? DateTime.Now;
+
+            _ = TryCreateOpenTimeEntryAsync(taskId);
+        }
+
+        private async Task TryCreateOpenTimeEntryAsync(int taskId)
+        {
+            try
+            {
+                var entry = new TimeEntry
+                {
+                    TaskId = taskId,
+                    StartTime = DateTime.UtcNow,
+                    EndTime = null,
+                    IsManual = false,
+                    Comment = "Timer session"
+                };
+
+                var created = await _api.PostAsync<TimeEntry>("/api/timeentries", entry);
+                if (created != null)
+                    _activeTimeEntryId = created.Id;
+            }
+            catch
+            {
+                // best-effort; presence "active" relies on open entries, but timer can still run locally
+            }
         }
 
         public async Task<TimeEntry?> StopActiveAsync(string comment = "Timer session")
@@ -53,18 +81,33 @@ namespace diplom.Services
             if (!HasActiveSession)
                 return null;
 
-            var entry = new TimeEntry
+            TimeEntry? created;
+            if (_activeTimeEntryId.HasValue)
             {
-                TaskId = ActiveTaskId!.Value,
-                StartTime = ActiveStartTimeLocal!.Value.ToUniversalTime(),
-                EndTime = DateTime.UtcNow,
-                IsManual = false,
-                Comment = comment ?? string.Empty
-            };
+                created = await _api.PutAsync<TimeEntry>($"/api/timeentries/{_activeTimeEntryId.Value}", new
+                {
+                    EndTime = DateTime.UtcNow,
+                    Comment = comment ?? string.Empty,
+                    IsManual = false
+                });
+            }
+            else
+            {
+                var entry = new TimeEntry
+                {
+                    TaskId = ActiveTaskId!.Value,
+                    StartTime = ActiveStartTimeLocal!.Value.ToUniversalTime(),
+                    EndTime = DateTime.UtcNow,
+                    IsManual = false,
+                    Comment = comment ?? string.Empty
+                };
 
-            var created = await _dataService.CreateTimeEntryAsync(entry);
+                created = await _dataService.CreateTimeEntryAsync(entry);
+            }
+
             ActiveTaskId = null;
             ActiveStartTimeLocal = null;
+            _activeTimeEntryId = null;
             return created;
         }
 

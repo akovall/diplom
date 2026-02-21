@@ -87,9 +87,9 @@ namespace diplom.viewmodels
                 "Administrative Policy", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void Logout()
+        private async void Logout()
         {
-            ApiClient.Instance.Logout();
+            await ApiClient.Instance.LogoutAsync();
             System.Diagnostics.Process.Start(
                 System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName!);
             Application.Current.Shutdown();

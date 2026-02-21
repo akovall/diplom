@@ -45,7 +45,7 @@ namespace diplom.viewmodels
             if (success)
             {
                 user.IsActive = !user.IsActive;
-                user.ActivityState = ComputeActivityState(user);
+                await RefreshActivityFromApiAsync();
             }
         }
 
@@ -74,11 +74,16 @@ namespace diplom.viewmodels
             try
             {
                 var users = await ApiClient.Instance.GetAsync<List<User>>("/api/users") ?? new();
+                var activity = await ApiClient.Instance.GetAsync<List<UserActivityDto>>("/api/users/activity") ?? new();
+                var stateByUserId = activity.ToDictionary(a => a.UserId, a => a.State);
+
                 Users.Clear();
                 foreach (var user in users)
                 {
                     var display = new UserDisplayItem(user);
-                    display.ActivityState = ComputeActivityState(display);
+                    display.ActivityState = stateByUserId.TryGetValue(display.Id, out var state)
+                        ? state
+                        : UserActivityState.Offline;
                     Users.Add(display);
                 }
             }
@@ -88,30 +93,39 @@ namespace diplom.viewmodels
             }
         }
 
-        private UserActivityState ComputeActivityState(UserDisplayItem user)
-        {
-            if (!user.IsActive)
-                return UserActivityState.Offline;
-
-            if (user.Id == ApiClient.Instance.UserId)
-                return TimeTrackingService.Instance.HasActiveSession ? UserActivityState.OnlineActive : UserActivityState.OnlineIdle;
-
-            return UserActivityState.OnlineIdle;
-        }
-
         private void RefreshActivityStates()
         {
             if (Users.Count == 0)
                 return;
 
-            var current = Users.FirstOrDefault(u => u.Id == ApiClient.Instance.UserId);
-            if (current == null)
-                return;
-
-            var computed = ComputeActivityState(current);
-            if (current.ActivityState != computed)
-                current.ActivityState = computed;
+            // Periodically refresh activity via API (presence + open time entry)
+            _ = RefreshActivityFromApiAsync();
         }
+
+        private async Task RefreshActivityFromApiAsync()
+        {
+            try
+            {
+                var activity = await ApiClient.Instance.GetAsync<List<UserActivityDto>>("/api/users/activity") ?? new();
+                var stateByUserId = activity.ToDictionary(a => a.UserId, a => a.State);
+
+                foreach (var user in Users)
+                {
+                    if (stateByUserId.TryGetValue(user.Id, out var state))
+                        user.ActivityState = state;
+                }
+            }
+            catch
+            {
+                // ignore transient failures
+            }
+        }
+    }
+
+    public sealed class UserActivityDto
+    {
+        public int UserId { get; set; }
+        public UserActivityState State { get; set; }
     }
 
     public partial class UserDisplayItem : ObservableObject

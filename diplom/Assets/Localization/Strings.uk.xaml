@@ -79,5 +79,7 @@
     <sys:String x:Key="MenuEdit">Редагувати</sys:String>
     <sys:String x:Key="MenuDelete">Видалити</sys:String>
     <sys:String x:Key="MenuDetails">Детальніше</sys:String>
+    <sys:String x:Key="MenuDeactivateAccount">Деактивувати акаунт</sys:String>
+    <sys:String x:Key="MenuActivateAccount">Активувати акаунт</sys:String>
 
 </ResourceDictionary>

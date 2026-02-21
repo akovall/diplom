@@ -130,6 +130,23 @@ namespace diplom.Services
             _http.DefaultRequestHeaders.Authorization = null;
         }
 
+        public async Task LogoutAsync()
+        {
+            if (IsAuthenticated)
+            {
+                try
+                {
+                    await PostAsync("/api/presence/logout");
+                }
+                catch
+                {
+                    // best-effort
+                }
+            }
+
+            Logout();
+        }
+
         // === Generic HTTP methods ===
 
         public async Task<T?> GetAsync<T>(string endpoint)
@@ -144,6 +161,12 @@ namespace diplom.Services
             var response = await _http.PostAsJsonAsync($"{BaseUrl}{endpoint}", data, _jsonOptions);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
+        }
+
+        public async Task<bool> PostAsync(string endpoint, object? data = null)
+        {
+            var response = await _http.PostAsJsonAsync($"{BaseUrl}{endpoint}", data ?? new { }, _jsonOptions);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> PutAsync(string endpoint, object data)

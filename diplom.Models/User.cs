@@ -19,6 +19,7 @@ namespace diplom.Models
         public string JobTitle { get; set; } = string.Empty;
         public UserRole Role { get; set; } = UserRole.Employee;
         public bool IsActive { get; set; } = true;
+        public DateTime? LastSeenUtc { get; set; }
         public List<TaskItem> Tasks { get; set; } = new();
         public List<TimeEntry> TimeEntries { get; set; } = new();
     }
