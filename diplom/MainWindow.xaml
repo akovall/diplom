@@ -158,10 +158,19 @@
                                                HorizontalAlignment="Right"
                                                Foreground="{DynamicResource MutedText}" FontSize="11"/>
                                 </StackPanel>
-                                <Border Width="35" Height="35" CornerRadius="17" Background="{DynamicResource AccentColor}">
-                                    <TextBlock Text="{Binding UserInitials}" Foreground="White" FontSize="13" FontWeight="Bold"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
+                                <Grid Width="35" Height="35">
+                                    <Border CornerRadius="17" Background="{DynamicResource AccentColor}">
+                                        <TextBlock Text="{Binding UserInitials}" Foreground="White" FontSize="13" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Ellipse Width="10" Height="10"
+                                             Fill="{Binding CurrentUserStatusBrush}"
+                                             Stroke="{DynamicResource HeaderBackground}"
+                                             StrokeThickness="2"
+                                             HorizontalAlignment="Right"
+                                             VerticalAlignment="Bottom"
+                                             Margin="0,0,-2,-2"/>
+                                </Grid>
                             </StackPanel>
                         </Grid>
                     </Border>

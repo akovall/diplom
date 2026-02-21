@@ -1,4 +1,6 @@
 using diplom.Data;
+using diplom.API.DTOs;
+using diplom.API.Services;
 using diplom.Models;
 using diplom.Models.enums;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +14,12 @@ namespace diplom.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IUserActivityService _userActivityService;
 
-        public UsersController(AppDbContext context)
+        public UsersController(AppDbContext context, IUserActivityService userActivityService)
         {
             _context = context;
+            _userActivityService = userActivityService;
         }
 
         // GET: api/users — admin only
@@ -91,6 +95,15 @@ namespace diplom.API.Controllers
             user.IsActive = true;
             await _context.SaveChangesAsync();
             return Ok();
+        }
+
+        // GET: api/users/activity — Admin/Manager: 3-state user activity (offline/idle/active)
+        [HttpGet("activity")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<ActionResult<List<UserActivityDto>>> GetUsersActivity(CancellationToken cancellationToken)
+        {
+            var result = await _userActivityService.GetUsersActivityAsync(cancellationToken);
+            return Ok(result);
         }
     }
 }

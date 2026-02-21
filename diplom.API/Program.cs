@@ -1,4 +1,5 @@
 using diplom.Data;
+using diplom.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database
 builder.Services.AddDbContext<AppDbContext>();
+
+// Services
+builder.Services.AddScoped<IUserActivityService, UserActivityService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]!;

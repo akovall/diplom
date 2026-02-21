@@ -2,6 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using diplom.Services;
+using System.Windows.Media;
+using System.Windows.Threading;
+using System;
 
 namespace diplom.viewmodels
 {
@@ -36,6 +39,15 @@ namespace diplom.viewmodels
         public string CurrentUserRole => ApiClient.Instance.Role;
         public bool IsAdminOrManager => ApiClient.Instance.Role is "Admin" or "Manager";
 
+        private Brush _currentUserStatusBrush = new SolidColorBrush(Color.FromRgb(0xF6, 0xAD, 0x55)); // yellow
+        public Brush CurrentUserStatusBrush
+        {
+            get => _currentUserStatusBrush;
+            set => SetProperty(ref _currentUserStatusBrush, value);
+        }
+
+        private readonly DispatcherTimer _headerStatusTimer;
+
         public string UserInitials
         {
             get
@@ -54,6 +66,20 @@ namespace diplom.viewmodels
             NavigateCommand = new RelayCommand<string>(OnNavigate);
 
             ToggleThemeCommand = new RelayCommand(ToggleTheme);
+
+            _headerStatusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _headerStatusTimer.Tick += (_, _) => UpdateHeaderStatus();
+            _headerStatusTimer.Start();
+            UpdateHeaderStatus();
+        }
+
+        private void UpdateHeaderStatus()
+        {
+            // MVP: show green when current user has active timer, else yellow.
+            var hasActive = TimeTrackingService.Instance.HasActiveSession;
+            CurrentUserStatusBrush = hasActive
+                ? new SolidColorBrush(Color.FromRgb(0x48, 0xBB, 0x78)) // green
+                : new SolidColorBrush(Color.FromRgb(0xF6, 0xAD, 0x55)); // yellow
         }
         private void ToggleTheme()
         {

@@ -105,11 +105,14 @@
                                                 <Ellipse.Style>
                                                     <Style TargetType="Ellipse">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                                <Setter Property="Fill" Value="#48BB78"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                            <DataTrigger Binding="{Binding ActivityState}" Value="Offline">
                                                                 <Setter Property="Fill" Value="#E53E3E"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ActivityState}" Value="OnlineIdle">
+                                                                <Setter Property="Fill" Value="#F6AD55"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ActivityState}" Value="OnlineActive">
+                                                                <Setter Property="Fill" Value="#48BB78"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
