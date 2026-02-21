@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Collections.Generic;
 
 namespace diplom.viewmodels
 {
@@ -84,20 +85,45 @@ namespace diplom.viewmodels
                 });
             }
 
-            TodayLogs.Clear();
-            foreach (var entry in _dataService.TimeEntries.OrderBy(e => e.StartTime))
-            {
-                var task = entry.Task ?? _dataService.Tasks.FirstOrDefault(t => t.Id == entry.TaskId);
-                UpsertTodayLog(
-                    entry.TaskId,
-                    task?.Title ?? $"Task #{entry.TaskId}",
-                    task?.Project?.Title ?? string.Empty,
-                    entry.Duration,
-                    entry.StartTime.ToLocalTime(),
-                    entry.EndTime?.ToLocalTime());
-            }
+            RebuildTodayLogsFromCache();
 
             RestoreActiveSessionFromService();
+        }
+
+        private void RebuildTodayLogsFromCache()
+        {
+            TodayLogs.Clear();
+
+            var entries = _dataService.TimeEntries
+                .OrderByDescending(e => e.StartTime)
+                .ToList();
+
+            foreach (var group in entries.GroupBy(e => e.TaskId))
+            {
+                var task = group.FirstOrDefault()?.Task ?? _dataService.Tasks.FirstOrDefault(t => t.Id == group.Key);
+                // Sum only closed entries to avoid UI "jumping" during navigation while tracking.
+                var total = TimeSpan.FromTicks(group.Where(e => e.EndTime.HasValue).Sum(e => e.Duration.Ticks));
+
+                // Display window for today: first start time -> last end time (or "..." if still running)
+                var minStartLocal = group.Min(e => e.StartTime).ToLocalTime();
+                var hasOpen = group.Any(e => !e.EndTime.HasValue);
+                var lastEndUtc = group.Where(e => e.EndTime.HasValue)
+                    .Select(e => e.EndTime!.Value)
+                    .DefaultIfEmpty()
+                    .Max();
+                DateTime? lastEndLocal = lastEndUtc == default ? null : lastEndUtc.ToLocalTime();
+
+                TodayLogs.Add(new TimeLogEntry
+                {
+                    TaskId = group.Key,
+                    TaskTitle = task?.Title ?? $"Task #{group.Key}",
+                    ProjectName = task?.Project?.Title ?? string.Empty,
+                    TotalDuration = total,
+                    Duration = _timeTrackingService.FormatTimeSpan(total),
+                    StartTime = minStartLocal.ToString("HH:mm"),
+                    EndTime = hasOpen ? "..." : (lastEndLocal?.ToString("HH:mm") ?? "...")
+                });
+            }
         }
 
         private void RestoreActiveSessionFromService()
@@ -173,6 +199,8 @@ namespace diplom.viewmodels
 
             IsTimerRunning = true;
             _timer.Start();
+
+            // Today logs are rebuilt from API/cache; no live entry here.
         }
 
         private async void StopTimer()
@@ -186,14 +214,9 @@ namespace diplom.viewmodels
                     var entry = await _timeTrackingService.StopActiveAsync();
                     if (entry?.EndTime != null)
                     {
-                        var elapsed = entry.EndTime.Value - entry.StartTime;
-                        UpsertTodayLog(
-                            SelectedTask.Id,
-                            SelectedTask.Title,
-                            SelectedTask.ProjectName,
-                            elapsed,
-                            entry.StartTime.ToLocalTime(),
-                            entry.EndTime.Value.ToLocalTime());
+                        await _dataService.RefreshTimeEntriesTodayAsync();
+                        await _dataService.RefreshTasksAsync();
+                        RebuildTodayLogsFromCache();
                     }
                 }
                 catch (Exception ex)
@@ -218,40 +241,6 @@ namespace diplom.viewmodels
             ElapsedTime = _timeTrackingService.FormatTimeSpan(elapsed);
         }
 
-        private void UpsertTodayLog(int taskId, string taskTitle, string projectName, TimeSpan duration, DateTime startLocal, DateTime? endLocal)
-        {
-            var existing = TodayLogs.FirstOrDefault(l => l.TaskId == taskId);
-            if (existing == null)
-            {
-                TodayLogs.Insert(0, new TimeLogEntry
-                {
-                    TaskId = taskId,
-                    TaskTitle = taskTitle,
-                    ProjectName = projectName,
-                    TotalDuration = duration,
-                    Duration = _timeTrackingService.FormatTimeSpan(duration),
-                    StartTime = startLocal.ToString("HH:mm"),
-                    EndTime = endLocal?.ToString("HH:mm") ?? "..."
-                });
-                return;
-            }
-
-            existing.TotalDuration += duration;
-            existing.Duration = _timeTrackingService.FormatTimeSpan(existing.TotalDuration);
-
-            if (DateTime.TryParse(existing.StartTime, out var existingStart))
-            {
-                var minStart = existingStart.TimeOfDay <= startLocal.TimeOfDay ? existingStart : startLocal;
-                existing.StartTime = minStart.ToString("HH:mm");
-            }
-            else
-            {
-                existing.StartTime = startLocal.ToString("HH:mm");
-            }
-
-            if (endLocal.HasValue)
-                existing.EndTime = endLocal.Value.ToString("HH:mm");
-        }
     }
 
     public class TrackerTaskItem
@@ -261,14 +250,22 @@ namespace diplom.viewmodels
         public string ProjectName { get; set; }
     }
 
-    public class TimeLogEntry
+    public partial class TimeLogEntry : ObservableObject
     {
         public int TaskId { get; set; }
         public string TaskTitle { get; set; }
         public string ProjectName { get; set; }
-        public string Duration { get; set; }
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
-        public TimeSpan TotalDuration { get; set; }
+
+        [ObservableProperty]
+        private string _duration = "00:00:00";
+
+        [ObservableProperty]
+        private string _startTime = "00:00";
+
+        [ObservableProperty]
+        private string _endTime = "...";
+
+        [ObservableProperty]
+        private TimeSpan _totalDuration;
     }
 }

@@ -109,6 +109,13 @@ namespace diplom.Services
             DataLoaded?.Invoke();
         }
 
+        public async Task RefreshTimeEntriesTodayAsync()
+        {
+            TimeEntries = await _api.GetAsync<List<TimeEntry>>("/api/timeentries/today") ?? new();
+            AttachTaskReferencesToTimeEntries();
+            DataLoaded?.Invoke();
+        }
+
         public async Task RefreshProjectsAsync()
         {
             Projects = await _api.GetAsync<List<Project>>("/api/projects") ?? new();

@@ -144,6 +144,15 @@ namespace diplom.Services
                 }
             }
 
+            try
+            {
+                await RealTimeService.Instance.StopAsync();
+            }
+            catch
+            {
+                // best-effort
+            }
+
             Logout();
         }
 

@@ -3,7 +3,9 @@ using diplom.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
+using diplom.API.Hubs;
 
 namespace diplom.API.Controllers
 {
@@ -13,10 +15,12 @@ namespace diplom.API.Controllers
     public class TimeEntriesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<TimeHub> _hub;
 
-        public TimeEntriesController(AppDbContext context)
+        public TimeEntriesController(AppDbContext context, IHubContext<TimeHub> hub)
         {
             _context = context;
+            _hub = hub;
         }
 
         private int GetCurrentUserId()
@@ -29,12 +33,14 @@ namespace diplom.API.Controllers
         public async Task<ActionResult<List<TimeEntry>>> GetTodayEntries()
         {
             var userId = GetCurrentUserId();
-            var today = DateTime.Today;
+            var startUtc = DateTime.UtcNow.Date;
+            var endUtc = startUtc.AddDays(1);
 
             var entries = await _context.TimeLogs
                 .Include(e => e.Task)
                 .Where(e => e.UserId == userId)
-                .Where(e => e.StartTime.Date == today || (e.EndTime.HasValue && e.EndTime.Value.Date == today))
+                // Use UTC day window to avoid timezone/date truncation issues in DB
+                .Where(e => e.StartTime < endUtc && (e.EndTime ?? DateTime.UtcNow) >= startUtc)
                 .OrderByDescending(e => e.StartTime)
                 .ToListAsync();
 
@@ -93,6 +99,8 @@ namespace diplom.API.Controllers
                 .Include(e => e.Task)
                 .FirstOrDefaultAsync(e => e.Id == entry.Id);
 
+            await _hub.Clients.All.SendAsync("TimeEntryChanged", entry.TaskId, userId);
+
             return Ok(created);
         }
 
@@ -133,6 +141,8 @@ namespace diplom.API.Controllers
                 .Include(e => e.Task)
                 .FirstOrDefaultAsync(e => e.Id == entry.Id);
 
+            await _hub.Clients.All.SendAsync("TimeEntryChanged", entry.TaskId, userId);
+
             return Ok(created);
         }
 
@@ -155,6 +165,8 @@ namespace diplom.API.Controllers
             existing.IsManual = entry.IsManual;
 
             await _context.SaveChangesAsync();
+
+            await _hub.Clients.All.SendAsync("TimeEntryChanged", existing.TaskId, userId);
             return Ok(existing);
         }
     }

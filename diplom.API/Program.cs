@@ -1,5 +1,6 @@
 using diplom.Data;
 using diplom.API.Services;
+using diplom.API.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -80,6 +81,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Swagger (development only)
@@ -93,5 +96,6 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<TimeHub>("/hubs/time");
 
 app.Run();

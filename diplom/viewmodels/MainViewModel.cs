@@ -77,6 +77,8 @@ namespace diplom.viewmodels
             _presenceTimer.Tick += async (_, _) => await SendPresenceHeartbeatAsync();
             _presenceTimer.Start();
             _ = SendPresenceHeartbeatAsync();
+
+            _ = InitializeRealTimeAsync();
         }
 
         private void UpdateHeaderStatus()
@@ -94,6 +96,16 @@ namespace diplom.viewmodels
                 return;
 
             await ApiClient.Instance.PostAsync("/api/presence/heartbeat");
+        }
+
+        private async System.Threading.Tasks.Task InitializeRealTimeAsync()
+        {
+            await RealTimeService.Instance.EnsureStartedAsync();
+            RealTimeService.Instance.TimeEntryChanged += (_, _) =>
+            {
+                _ = AppDataService.Instance.RefreshTasksAsync();
+                _ = AppDataService.Instance.RefreshTimeEntriesTodayAsync();
+            };
         }
         private void ToggleTheme()
         {

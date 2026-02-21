@@ -94,27 +94,12 @@ namespace diplom.viewmodels
             CreateTaskCommand = new RelayCommand(OpenCreateDialog);
             DeleteTaskCommand = new AsyncRelayCommand<TaskDisplayItem>(DeleteTaskAsync);
 
+            // Intentionally disable live ticking on task cards; time is refreshed after stop/sync.
             _activeTimer = new DispatcherTimer();
-            _activeTimer.Interval = TimeSpan.FromSeconds(1);
-            _activeTimer.Tick += ActiveTimer_Tick;
 
             LoadProjectsFromCache();
             LoadTasksFromCache();
             LoadAssigneesFromCache();
-        }
-
-        private void ActiveTimer_Tick(object? sender, EventArgs e)
-        {
-            if (!_timeTrackingService.HasActiveSession || !_timeTrackingService.ActiveTaskId.HasValue || !_timeTrackingService.ActiveStartTimeLocal.HasValue)
-                return;
-
-            var activeTask = _allTasks.FirstOrDefault(t => t.Id == _timeTrackingService.ActiveTaskId.Value);
-            if (activeTask != null)
-            {
-                var currentSession = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal.Value;
-                var total = activeTask.AccumulatedTime + currentSession;
-                activeTask.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(total);
-            }
         }
 
         private async Task ToggleTimerAsync(TaskDisplayItem item)
@@ -130,18 +115,13 @@ namespace diplom.viewmodels
             {
                 try
                 {
-                    var created = await _timeTrackingService.StopActiveAsync();
-                    if (created?.EndTime != null)
-                    {
-                        var sessionDuration = created.EndTime.Value - created.StartTime;
-                        if (sessionDuration > TimeSpan.Zero)
-                            item.AccumulatedTime += sessionDuration;
-                    }
-
-                    item.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(item.AccumulatedTime);
+                    await _timeTrackingService.StopActiveAsync();
                     item.IsActive = false;
                     item.ActiveStartTime = null;
                     _activeTimer.Stop();
+
+                    await _dataService.RefreshTasksAsync();
+                    LoadTasksFromCache();
                 }
                 catch (Exception ex)
                 {
@@ -157,15 +137,7 @@ namespace diplom.viewmodels
                     {
                         try
                         {
-                            var created = await _timeTrackingService.StopActiveAsync();
-                            if (created?.EndTime != null)
-                            {
-                                var sessionDuration = created.EndTime.Value - created.StartTime;
-                                if (sessionDuration > TimeSpan.Zero)
-                                    currentlyActive.AccumulatedTime += sessionDuration;
-                            }
-
-                            currentlyActive.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(currentlyActive.AccumulatedTime);
+                            await _timeTrackingService.StopActiveAsync();
                             currentlyActive.IsActive = false;
                             currentlyActive.ActiveStartTime = null;
                         }
@@ -180,7 +152,7 @@ namespace diplom.viewmodels
                 _timeTrackingService.Start(item.Id);
                 item.IsActive = true;
                 item.ActiveStartTime = _timeTrackingService.ActiveStartTimeLocal;
-                _activeTimer.Start();
+                // no live tick
             }
         }
 
@@ -200,9 +172,8 @@ namespace diplom.viewmodels
                 {
                     activeTask.IsActive = true;
                     activeTask.ActiveStartTime = _timeTrackingService.ActiveStartTimeLocal;
-                    var currentSession = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal!.Value;
-                    activeTask.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(activeTask.AccumulatedTime + currentSession);
-                    _activeTimer.Start();
+                    activeTask.TimeSpentFormatted = _timeTrackingService.FormatTimeSpan(activeTask.AccumulatedTime);
+                    _activeTimer.Stop();
                     return;
                 }
             }
@@ -258,8 +229,9 @@ namespace diplom.viewmodels
 
             foreach (var task in _dataService.Tasks)
             {
+                // Ignore open entries (EndTime == null) to avoid UI double-counting while tracking.
                 var timeSpent = task.TimeEntries != null && task.TimeEntries.Any()
-                    ? TimeSpan.FromTicks(task.TimeEntries.Sum(e => e.Duration.Ticks))
+                    ? TimeSpan.FromTicks(task.TimeEntries.Where(e => e.EndTime.HasValue).Sum(e => e.Duration.Ticks))
                     : TimeSpan.Zero;
 
                 var displayItem = MapToDisplayItem(task, timeSpent);
@@ -477,13 +449,7 @@ namespace diplom.viewmodels
             {
                 if (_timeTrackingService.HasActiveSession && _timeTrackingService.ActiveTaskId == task.Id)
                 {
-                    var created = await _timeTrackingService.StopActiveAsync("Timer stopped because task was deleted");
-                    if (created?.EndTime != null)
-                    {
-                        var sessionDuration = created.EndTime.Value - created.StartTime;
-                        if (sessionDuration > TimeSpan.Zero)
-                            task.AccumulatedTime += sessionDuration;
-                    }
+                    await _timeTrackingService.StopActiveAsync("Timer stopped because task was deleted");
                 }
 
                 var success = await _dataService.DeleteTaskAsync(task.Id);

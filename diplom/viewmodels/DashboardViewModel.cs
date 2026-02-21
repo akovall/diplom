@@ -225,8 +225,8 @@ namespace diplom.viewmodels
         {
             if (task.TimeEntries == null || !task.TimeEntries.Any())
                 return "00:00";
-
-            var total = TimeSpan.FromTicks(task.TimeEntries.Sum(e => e.Duration.Ticks));
+            
+            var total = TimeSpan.FromTicks(task.TimeEntries.Where(e => e.EndTime.HasValue).Sum(e => e.Duration.Ticks));
             return $"{(int)total.TotalHours:D2}:{total.Minutes:D2}";
         }
 
