@@ -1,17 +1,24 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using diplom.Models;
+using diplom.Models.enums;
 using diplom.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace diplom.viewmodels
 {
     public class DashboardViewModel : ObservableObject
     {
         private readonly AppDataService _dataService;
+        private readonly ITimeTrackingService _timeTrackingService;
+        private readonly DispatcherTimer _uiTimer;
 
-        // Stats cards
+        private const double TargetWorkHoursPerDay = 8.0;
+
         private string _workedToday = "00:00";
         public string WorkedToday
         {
@@ -19,18 +26,25 @@ namespace diplom.viewmodels
             set => SetProperty(ref _workedToday, value);
         }
 
+        private double _workedTodayProgress;
+        public double WorkedTodayProgress
+        {
+            get => _workedTodayProgress;
+            set => SetProperty(ref _workedTodayProgress, value);
+        }
+
+        private int _tasksDone;
+        public int TasksDone
+        {
+            get => _tasksDone;
+            set => SetProperty(ref _tasksDone, value);
+        }
+
         private int _tasksInProgress;
         public int TasksInProgress
         {
             get => _tasksInProgress;
             set => SetProperty(ref _tasksInProgress, value);
-        }
-
-        private int _urgentTasks;
-        public int UrgentTasks
-        {
-            get => _urgentTasks;
-            set => SetProperty(ref _urgentTasks, value);
         }
 
         private double _productivity;
@@ -47,46 +61,81 @@ namespace diplom.viewmodels
             set => SetProperty(ref _productivityText, value);
         }
 
-        // Recent tasks
-        public ObservableCollection<RecentTaskItem> RecentTasks { get; } = new();
+        private string _currentActivityTitle = "No active task";
+        public string CurrentActivityTitle
+        {
+            get => _currentActivityTitle;
+            set => SetProperty(ref _currentActivityTitle, value);
+        }
 
-        // Weekly activity (for chart)
+        private string _currentActivityProject = string.Empty;
+        public string CurrentActivityProject
+        {
+            get => _currentActivityProject;
+            set => SetProperty(ref _currentActivityProject, value);
+        }
+
+        private string _currentActivityTimer = "00:00:00";
+        public string CurrentActivityTimer
+        {
+            get => _currentActivityTimer;
+            set => SetProperty(ref _currentActivityTimer, value);
+        }
+
+        private bool _hasActiveSession;
+        public bool HasActiveSession
+        {
+            get => _hasActiveSession;
+            set => SetProperty(ref _hasActiveSession, value);
+        }
+
+        public ObservableCollection<UrgentTaskItem> UrgentTasks { get; } = new();
+        public ObservableCollection<RecentTaskItem> RecentTasks { get; } = new();
         public ObservableCollection<DayActivity> WeeklyActivity { get; } = new();
+
+        public IAsyncRelayCommand StopActiveTimerCommand { get; }
 
         public DashboardViewModel()
         {
             _dataService = AppDataService.Instance;
-            
-            // Subscribe to data updates
+            _timeTrackingService = TimeTrackingService.Instance;
+
+            StopActiveTimerCommand = new AsyncRelayCommand(StopActiveTimerAsync, () => HasActiveSession);
+
+            _uiTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _uiTimer.Tick += (_, _) => UpdateCurrentActivity();
+            _uiTimer.Start();
+
             _dataService.DataLoaded += LoadDashboardData;
-            
-            // Load initial data if already available
+
             if (_dataService.IsLoaded)
-            {
                 LoadDashboardData();
-            }
         }
 
         private void LoadDashboardData()
         {
-            // Worked today
             var todayWorked = _dataService.GetTodayWorkedTime();
             WorkedToday = $"{(int)todayWorked.TotalHours:D2}:{todayWorked.Minutes:D2}";
+            WorkedTodayProgress = Math.Clamp(todayWorked.TotalHours / TargetWorkHoursPerDay * 100.0, 0, 100);
 
-            // Tasks in progress
             TasksInProgress = _dataService.GetTasksInProgressCount();
+            TasksDone = _dataService.GetTasksDoneCount();
 
-            // Urgent tasks
-            UrgentTasks = _dataService.GetUrgentTasksCount();
-
-            // Productivity
             Productivity = _dataService.GetProductivityPercentage();
             ProductivityText = $"{Productivity}%";
 
-            // Recent tasks
+            UrgentTasks.Clear();
+            foreach (var task in _dataService.GetTopUrgentTasks(3))
+            {
+                UrgentTasks.Add(new UrgentTaskItem
+                {
+                    Title = task.Title,
+                    DeadlineText = FormatDeadline(task.Deadline)
+                });
+            }
+
             RecentTasks.Clear();
-            var recentTasks = _dataService.GetRecentTasks(5);
-            foreach (var task in recentTasks)
+            foreach (var task in _dataService.GetRecentTasks(5))
             {
                 RecentTasks.Add(new RecentTaskItem
                 {
@@ -98,62 +147,109 @@ namespace diplom.viewmodels
                 });
             }
 
-            // Weekly activity (sample data for now - will be real later)
             LoadWeeklyActivity();
+            UpdateCurrentActivity();
+        }
+
+        private void UpdateCurrentActivity()
+        {
+            HasActiveSession = _timeTrackingService.HasActiveSession;
+            StopActiveTimerCommand.NotifyCanExecuteChanged();
+
+            if (!_timeTrackingService.HasActiveSession || !_timeTrackingService.ActiveTaskId.HasValue || !_timeTrackingService.ActiveStartTimeLocal.HasValue)
+            {
+                CurrentActivityTitle = "No active task";
+                CurrentActivityProject = string.Empty;
+                CurrentActivityTimer = "00:00:00";
+                return;
+            }
+
+            var taskId = _timeTrackingService.ActiveTaskId.Value;
+            var task = _dataService.Tasks.FirstOrDefault(t => t.Id == taskId);
+
+            CurrentActivityTitle = task?.Title ?? $"Task #{taskId}";
+            CurrentActivityProject = task?.Project?.Title != null ? $"Project: {task.Project.Title}" : string.Empty;
+
+            var elapsed = DateTime.Now - _timeTrackingService.ActiveStartTimeLocal.Value;
+            if (elapsed < TimeSpan.Zero) elapsed = TimeSpan.Zero;
+            CurrentActivityTimer = _timeTrackingService.FormatTimeSpan(elapsed);
+        }
+
+        private async Task StopActiveTimerAsync()
+        {
+            await _timeTrackingService.StopActiveAsync();
+            await _dataService.RefreshTasksAsync();
+            UpdateCurrentActivity();
         }
 
         private void LoadWeeklyActivity()
         {
             WeeklyActivity.Clear();
-            
+
             var days = new[] { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд" };
             var today = (int)DateTime.Today.DayOfWeek;
             if (today == 0) today = 7; // Sunday = 7
-            
+
             for (int i = 0; i < 7; i++)
             {
                 var isToday = (i + 1) == today;
                 var hours = isToday ? _dataService.GetTodayWorkedTime().TotalHours : 0;
-                
+
                 WeeklyActivity.Add(new DayActivity
                 {
                     DayName = days[i],
                     Hours = Math.Round(hours, 1),
                     IsToday = isToday,
-                    BarHeight = Math.Max(10, hours * 15) // Scale for visualization
+                    BarHeight = Math.Max(10, hours * 15)
                 });
             }
+        }
+
+        private static string FormatDeadline(DateTime? deadline)
+        {
+            if (!deadline.HasValue)
+                return string.Empty;
+
+            var local = deadline.Value;
+            var today = DateTime.Today;
+
+            if (local.Date == today)
+                return $"Today, {local:HH:mm}";
+            if (local.Date == today.AddDays(1))
+                return $"Tomorrow, {local:HH:mm}";
+
+            return local.ToString("dd.MM.yyyy, HH:mm");
         }
 
         private string GetTaskTimeSpent(TaskItem task)
         {
             if (task.TimeEntries == null || !task.TimeEntries.Any())
                 return "00:00";
-            
+
             var total = TimeSpan.FromTicks(task.TimeEntries.Sum(e => e.Duration.Ticks));
             return $"{(int)total.TotalHours:D2}:{total.Minutes:D2}";
         }
 
-        private string MapStatus(Models.enums.AppTaskStatus status)
+        private static string MapStatus(AppTaskStatus status)
         {
             return status switch
             {
-                Models.enums.AppTaskStatus.ToDo => "Pending",
-                Models.enums.AppTaskStatus.InProgress => "In Progress",
-                Models.enums.AppTaskStatus.OnHold => "On Hold",
-                Models.enums.AppTaskStatus.Done => "Done",
+                AppTaskStatus.ToDo => "Pending",
+                AppTaskStatus.InProgress => "In Progress",
+                AppTaskStatus.OnHold => "On Hold",
+                AppTaskStatus.Done => "Done",
                 _ => "Pending"
             };
         }
 
-        private string MapPriority(Models.enums.TaskPriority priority)
+        private static string MapPriority(TaskPriority priority)
         {
             return priority switch
             {
-                Models.enums.TaskPriority.Low => "Low",
-                Models.enums.TaskPriority.Medium => "Medium",
-                Models.enums.TaskPriority.High => "High",
-                Models.enums.TaskPriority.Critical => "Critical",
+                TaskPriority.Low => "Low",
+                TaskPriority.Medium => "Medium",
+                TaskPriority.High => "High",
+                TaskPriority.Critical => "Critical",
                 _ => "Medium"
             };
         }
@@ -175,4 +271,11 @@ namespace diplom.viewmodels
         public bool IsToday { get; set; }
         public double BarHeight { get; set; }
     }
+
+    public class UrgentTaskItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public string DeadlineText { get; set; } = string.Empty;
+    }
 }
+

@@ -126,10 +126,15 @@ namespace diplom.Services
             return Tasks.Count(t => t.Status == AppTaskStatus.InProgress);
         }
 
+        public int GetTasksDoneCount()
+        {
+            return Tasks.Count(t => t.Status == AppTaskStatus.Done);
+        }
+
         public int GetTasksDoneToday()
         {
             var today = DateTime.Today;
-            return Tasks.Count(t => t.Status == AppTaskStatus.Done && 
+            return Tasks.Count(t => t.Status == AppTaskStatus.Done &&
                                    t.CreatedAt.Date == today);
         }
 
@@ -137,6 +142,17 @@ namespace diplom.Services
         {
             return Tasks.Count(t => t.Priority == TaskPriority.Critical && 
                                    t.Status != AppTaskStatus.Done);
+        }
+
+        public List<TaskItem> GetTopUrgentTasks(int count = 3)
+        {
+            return Tasks
+                .Where(t => t.Status != AppTaskStatus.Done)
+                .Where(t => t.Deadline.HasValue)
+                .OrderBy(t => t.Deadline)
+                .ThenByDescending(t => t.Priority)
+                .Take(count)
+                .ToList();
         }
 
         public double GetProductivityPercentage()
