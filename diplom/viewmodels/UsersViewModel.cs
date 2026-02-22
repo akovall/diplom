@@ -115,6 +115,10 @@ namespace diplom.viewmodels
                         user.ActivityState = state;
                 }
             }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
             catch
             {
                 // ignore transient failures

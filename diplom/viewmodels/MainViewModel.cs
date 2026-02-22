@@ -5,6 +5,7 @@ using diplom.Services;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System;
+using System.Windows;
 
 namespace diplom.viewmodels
 {
@@ -79,6 +80,11 @@ namespace diplom.viewmodels
             _ = SendPresenceHeartbeatAsync();
 
             _ = InitializeRealTimeAsync();
+
+            ApiClient.Instance.Unauthorized += () =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(RestartApp));
+            };
         }
 
         private void UpdateHeaderStatus()
@@ -95,7 +101,29 @@ namespace diplom.viewmodels
             if (!ApiClient.Instance.IsAuthenticated)
                 return;
 
-            await ApiClient.Instance.PostAsync("/api/presence/heartbeat");
+            try
+            {
+                await ApiClient.Instance.PostAsync("/api/presence/heartbeat");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                RestartApp();
+            }
+        }
+
+        private static void RestartApp()
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(
+                    System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName!);
+            }
+            catch
+            {
+                // ignore
+            }
+
+            Application.Current.Shutdown();
         }
 
         private async System.Threading.Tasks.Task InitializeRealTimeAsync()
@@ -103,15 +131,31 @@ namespace diplom.viewmodels
             await RealTimeService.Instance.EnsureStartedAsync();
             RealTimeService.Instance.TimeEntryChanged += (_, _) =>
             {
-                _ = AppDataService.Instance.RefreshTasksAsync();
-                _ = AppDataService.Instance.RefreshTimeEntriesTodayAsync();
+                _ = SafeRefreshAsync();
             };
 
             RealTimeService.Instance.TaskChanged += taskId =>
             {
-                _ = AppDataService.Instance.RefreshTasksAsync();
-                _ = AppDataService.Instance.RefreshProjectsAsync();
+                _ = SafeRefreshAsync();
             };
+        }
+
+        private static async System.Threading.Tasks.Task SafeRefreshAsync()
+        {
+            try
+            {
+                await AppDataService.Instance.RefreshTasksAsync();
+                await AppDataService.Instance.RefreshProjectsAsync();
+                await AppDataService.Instance.RefreshTimeEntriesTodayAsync();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                RestartApp();
+            }
+            catch
+            {
+                // ignore transient failures
+            }
         }
         private void ToggleTheme()
         {

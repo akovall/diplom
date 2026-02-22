@@ -73,6 +73,7 @@ namespace diplom.API.Controllers
                 return Unauthorized(new { message = "Account is deactivated" });
 
             user.LastSeenUtc = DateTime.UtcNow;
+            user.CurrentSessionId = Guid.NewGuid();
 
             // Safety: if app was closed/crashed while tracking, close any open sessions.
             var openEntries = await _context.TimeLogs
@@ -130,7 +131,10 @@ namespace diplom.API.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
-                new Claim("fullName", user.FullName)
+                new Claim("fullName", user.FullName),
+                // Include both to avoid inbound claim type mapping surprises.
+                new Claim("sid", user.CurrentSessionId?.ToString() ?? string.Empty),
+                new Claim(ClaimTypes.Sid, user.CurrentSessionId?.ToString() ?? string.Empty)
             };
 
             var token = new JwtSecurityToken(

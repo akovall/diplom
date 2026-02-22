@@ -32,6 +32,8 @@ namespace diplom.Services
         private readonly HttpClient _http;
         private readonly JsonSerializerOptions _jsonOptions;
 
+        public event Action? Unauthorized;
+
         // Current user info (set after login)
         public string? Token { get; private set; }
         public int UserId { get; private set; }
@@ -61,6 +63,20 @@ namespace diplom.Services
                 _http.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", Token);
             }
+        }
+
+        private async Task EnsureAuthorizedAsync(HttpResponseMessage response)
+        {
+            if (response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
+                return;
+
+            // Session can be revoked server-side (e.g., login from another client).
+            var body = string.Empty;
+            try { body = await response.Content.ReadAsStringAsync(); } catch { }
+
+            Logout();
+            Unauthorized?.Invoke();
+            throw new UnauthorizedAccessException(string.IsNullOrWhiteSpace(body) ? "Unauthorized" : body);
         }
 
         // === Auth ===
@@ -161,6 +177,7 @@ namespace diplom.Services
         public async Task<T?> GetAsync<T>(string endpoint)
         {
             var response = await _http.GetAsync($"{BaseUrl}{endpoint}");
+            await EnsureAuthorizedAsync(response);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
         }
@@ -168,6 +185,7 @@ namespace diplom.Services
         public async Task<T?> PostAsync<T>(string endpoint, object data)
         {
             var response = await _http.PostAsJsonAsync($"{BaseUrl}{endpoint}", data, _jsonOptions);
+            await EnsureAuthorizedAsync(response);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
         }
@@ -175,18 +193,21 @@ namespace diplom.Services
         public async Task<bool> PostAsync(string endpoint, object? data = null)
         {
             var response = await _http.PostAsJsonAsync($"{BaseUrl}{endpoint}", data ?? new { }, _jsonOptions);
+            await EnsureAuthorizedAsync(response);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> PutAsync(string endpoint, object data)
         {
             var response = await _http.PutAsJsonAsync($"{BaseUrl}{endpoint}", data, _jsonOptions);
+            await EnsureAuthorizedAsync(response);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<T?> PutAsync<T>(string endpoint, object data)
         {
             var response = await _http.PutAsJsonAsync($"{BaseUrl}{endpoint}", data, _jsonOptions);
+            await EnsureAuthorizedAsync(response);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
         }
@@ -194,6 +215,7 @@ namespace diplom.Services
         public async Task DeleteAsync(string endpoint)
         {
             var response = await _http.DeleteAsync($"{BaseUrl}{endpoint}");
+            await EnsureAuthorizedAsync(response);
             response.EnsureSuccessStatusCode();
         }
 

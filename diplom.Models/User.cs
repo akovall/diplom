@@ -20,6 +20,7 @@ namespace diplom.Models
         public UserRole Role { get; set; } = UserRole.Employee;
         public bool IsActive { get; set; } = true;
         public DateTime? LastSeenUtc { get; set; }
+        public Guid? CurrentSessionId { get; set; }
         public List<TaskItem> Tasks { get; set; } = new();
         public List<TimeEntry> TimeEntries { get; set; } = new();
     }

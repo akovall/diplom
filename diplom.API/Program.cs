@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var sidClaim = context.Principal?.FindFirst("sid")?.Value
+                    ?? context.Principal?.FindFirst(ClaimTypes.Sid)?.Value;
+                if (!int.TryParse(userIdClaim, out var userId))
+                {
+                    context.Fail("Invalid user");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                var user = await db.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    context.Fail("Invalid user");
+                    return;
+                }
+
+                var currentSid = user.CurrentSessionId?.ToString() ?? string.Empty;
+                if (!string.Equals(sidClaim, currentSid, StringComparison.Ordinal))
+                {
+                    context.Fail("Session revoked");
+                }
+            }
         };
     });
 
