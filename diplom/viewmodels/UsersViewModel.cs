@@ -8,7 +8,9 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Threading;
+using diplom.views;
 
 namespace diplom.viewmodels
 {
@@ -22,6 +24,8 @@ namespace diplom.viewmodels
 
         private readonly DispatcherTimer _activityTimer;
 
+        public bool CanViewAnalytics => ApiClient.Instance.Role is "Admin" or "Manager";
+
         public UsersViewModel()
         {
             LoadUsers();
@@ -29,6 +33,20 @@ namespace diplom.viewmodels
             _activityTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _activityTimer.Tick += (_, _) => RefreshActivityStates();
             _activityTimer.Start();
+        }
+
+        [RelayCommand]
+        private void OpenUserAnalytics(UserDisplayItem user)
+        {
+            if (user == null) return;
+            if (!CanViewAnalytics) return;
+
+            var dialog = new UserAnalyticsDialog
+            {
+                Owner = Application.Current?.MainWindow
+            };
+            dialog.DataContext = new AnalyticsViewModel(user.Id, user.FullName, user.JobTitle);
+            dialog.Show();
         }
 
         [RelayCommand]

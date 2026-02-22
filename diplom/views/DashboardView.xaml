@@ -34,7 +34,7 @@
                         <TextBlock Text="{Binding TasksDone}" Foreground="{DynamicResource PrimaryText}" FontSize="32" FontWeight="Bold"/>
                         <TextBlock Text="{DynamicResource Done}" Foreground="{DynamicResource SecondaryText}" FontSize="16" VerticalAlignment="Bottom" Margin="5,0,0,5"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding TasksInProgress, StringFormat=In Progress: {0}}" Foreground="{DynamicResource AccentColor}" FontSize="12" Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding TasksInProgress, StringFormat=У роботі: {0}}" Foreground="{DynamicResource AccentColor}" FontSize="12" Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
 
@@ -89,17 +89,44 @@
             <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Margin="0,0,10,0" Padding="20"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
                     <TextBlock Text="{DynamicResource WeeklyActivity}" Foreground="{DynamicResource PrimaryText}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Top"/>
 
-                    <UniformGrid Columns="7" VerticalAlignment="Bottom" Height="150" Margin="10,40,10,0">
-                        <Border Width="20" Height="80" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
-                        <Border Width="20" Height="120" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
-                        <Border Width="20" Height="100" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
-                        <Border Width="20" Height="140" VerticalAlignment="Bottom" Background="{DynamicResource AccentColor}" CornerRadius="4"/>
-                        <Border Width="20" Height="60" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
-                        <Border Width="20" Height="0" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
-                        <Border Width="20" Height="0" VerticalAlignment="Bottom" Background="{DynamicResource BorderBrush}" CornerRadius="4"/>
-                    </UniformGrid>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding WeeklyActivity}" Margin="0,14,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="7"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Hours, StringFormat={}{0:0.#}г}" 
+                                               Foreground="{DynamicResource SecondaryText}" FontSize="11"
+                                               HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                    <Border Width="24" Height="{Binding BarHeight}" VerticalAlignment="Bottom" CornerRadius="5"
+                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource AccentColor}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+                                    <TextBlock Text="{Binding DayName}" Foreground="{DynamicResource SecondaryText}" FontSize="11"
+                                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
             </Border>
 

@@ -262,21 +262,47 @@ namespace diplom.viewmodels
         {
             WeeklyActivity.Clear();
 
-            var days = new[] { "ÐŸÐ½", "Ð’Ñ‚", "Ð¡Ñ€", "Ð§Ñ‚", "ÐŸÑ‚", "Ð¡Ð±", "ÐÐ´" };
-            var today = (int)DateTime.Today.DayOfWeek;
-            if (today == 0) today = 7; // Sunday = 7
+            var weekStart = AppDataService.GetWeekStartLocal(DateTime.Now);
+            var dayLabels = new[] { "Ïí", "Âò", "Ñð", "×ò", "Ïò", "Ñá", "Íä" };
+
+            var hoursByDay = Enumerable.Range(0, 7)
+                .ToDictionary(i => weekStart.AddDays(i).Date, _ => 0d);
+
+            var userId = ApiClient.Instance.UserId;
+            var weekEnd = weekStart.AddDays(7);
+
+            var myEntries = _dataService.Tasks
+                .Where(t => t.AssigneeId == userId)
+                .SelectMany(t => t.TimeEntries ?? Enumerable.Empty<TimeEntry>())
+                .Where(e => e.EndTime.HasValue)
+                .ToList();
+
+            foreach (var entry in myEntries)
+            {
+                var localEnd = entry.EndTime!.Value.ToLocalTime();
+                if (localEnd < weekStart || localEnd >= weekEnd)
+                    continue;
+
+                var day = localEnd.Date;
+                if (hoursByDay.ContainsKey(day))
+                    hoursByDay[day] += entry.Duration.TotalHours;
+            }
+
+            var maxHours = Math.Max(8.0, hoursByDay.Values.DefaultIfEmpty(0).Max());
 
             for (int i = 0; i < 7; i++)
             {
-                var isToday = (i + 1) == today;
-                var hours = isToday ? _dataService.GetTodayWorkedTime().TotalHours : 0;
+                var dayDate = weekStart.AddDays(i).Date;
+                var hours = Math.Round(hoursByDay[dayDate], 1);
+                var isToday = dayDate == DateTime.Now.Date;
+                var normalized = maxHours <= 0 ? 0 : hours / maxHours;
 
                 WeeklyActivity.Add(new DayActivity
                 {
-                    DayName = days[i],
-                    Hours = Math.Round(hours, 1),
+                    DayName = dayLabels[i],
+                    Hours = hours,
                     IsToday = isToday,
-                    BarHeight = Math.Max(10, hours * 15)
+                    BarHeight = Math.Max(8, Math.Round(normalized * 90, 0))
                 });
             }
         }

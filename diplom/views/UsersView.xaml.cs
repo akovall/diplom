@@ -60,5 +60,19 @@ namespace diplom.views
             if (!user.IsActive)
                 vm.ToggleUserStatusCommand.Execute(user);
         }
+
+        private void AnalyticsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not UsersViewModel vm)
+                return;
+
+            if (sender is not Button button)
+                return;
+
+            if (button.DataContext is not UserDisplayItem user)
+                return;
+
+            vm.OpenUserAnalyticsCommand.Execute(user);
+        }
     }
 }
