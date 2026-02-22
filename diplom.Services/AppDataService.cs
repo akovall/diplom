@@ -245,6 +245,7 @@ namespace diplom.Services
             if (created != null)
             {
                 Tasks.Insert(0, created);
+                DataLoaded?.Invoke();
             }
             
             return created ?? task;
@@ -256,6 +257,7 @@ namespace diplom.Services
             {
                 await _api.DeleteAsync($"/api/tasks/{id}");
                 Tasks.RemoveAll(t => t.Id == id);
+                DataLoaded?.Invoke();
                 return true;
             }
             catch
@@ -273,6 +275,7 @@ namespace diplom.Services
             if (index >= 0 && updated != null)
             {
                 Tasks[index] = updated;
+                DataLoaded?.Invoke();
             }
             
             return updated ?? task;

@@ -1,11 +1,10 @@
-using diplom.Models.Analytics;
+﻿using diplom.Models.Analytics;
 using LiveChartsCore;
-using LiveChartsCore.Defaults;
+using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace diplom.Services
@@ -20,6 +19,39 @@ namespace diplom.Services
             public SolidColorPaint LegendTextPaint { get; init; } = new(new SKColor(220, 220, 220));
         }
 
+        private readonly record struct ThemeChartColors(
+            SKColor Text,
+            SKColor Separator,
+            SKColor Tick,
+            SKColor Green,
+            SKColor Red,
+            SKColor Blue,
+            SKColor Slate,
+            SKColor PointFill);
+
+        private static ThemeChartColors GetThemeColors(bool isDarkTheme)
+        {
+            return isDarkTheme
+                ? new ThemeChartColors(
+                    Text: new SKColor(238, 242, 247),
+                    Separator: new SKColor(70, 70, 70, 80),
+                    Tick: new SKColor(70, 70, 70, 120),
+                    Green: new SKColor(72, 187, 120, 210),
+                    Red: new SKColor(229, 62, 62, 210),
+                    Blue: new SKColor(76, 202, 240),
+                    Slate: new SKColor(120, 120, 120, 170),
+                    PointFill: new SKColor(16, 16, 16, 255))
+                : new ThemeChartColors(
+                    Text: new SKColor(51, 65, 85),
+                    Separator: new SKColor(148, 163, 184, 90),
+                    Tick: new SKColor(148, 163, 184, 140),
+                    Green: new SKColor(34, 197, 94, 200),
+                    Red: new SKColor(239, 68, 68, 200),
+                    Blue: new SKColor(14, 116, 144),
+                    Slate: new SKColor(148, 163, 184, 200),
+                    PointFill: new SKColor(255, 255, 255, 255));
+        }
+
         public static MappedChart MapUserAnalytics(UserAnalyticsDto dto, bool isDarkTheme)
         {
             var days = dto.Days.OrderBy(d => d.DayUtc).ToList();
@@ -32,23 +64,16 @@ namespace diplom.Services
             var onTimeCompleted = completed.Zip(overdue, (c, o) => Math.Max(0, c - o)).ToArray();
             var openFromAssigned = assigned.Zip(completed, (a, c) => Math.Max(0, a - c)).ToArray();
 
-            var openColor = isDarkTheme ? new SKColor(120, 120, 120, 170) : new SKColor(148, 163, 184, 200);
-            var onTimeColor = isDarkTheme ? new SKColor(72, 187, 120, 210) : new SKColor(34, 197, 94, 200);
-            var overdueColor = isDarkTheme ? new SKColor(229, 62, 62, 210) : new SKColor(239, 68, 68, 200);
-            var lineColor = isDarkTheme ? new SKColor(76, 202, 240) : new SKColor(14, 116, 144);
-            var chartTextColor = isDarkTheme ? new SKColor(238, 242, 247) : new SKColor(51, 65, 85);
-            var separatorColor = isDarkTheme ? new SKColor(70, 70, 70, 80) : new SKColor(148, 163, 184, 90);
-            var tickColor = isDarkTheme ? new SKColor(70, 70, 70, 120) : new SKColor(148, 163, 184, 140);
-            var pointFill = isDarkTheme ? new SKColor(16, 16, 16, 255) : new SKColor(255, 255, 255, 255);
+            var colors = GetThemeColors(isDarkTheme);
+            var textPaint = new SolidColorPaint(colors.Text);
 
-            // Primary Y axis: tasks (stacked columns). Secondary Y axis: worked hours (line).
             var series = new ISeries[]
             {
                 new StackedColumnSeries<int>
                 {
                     Name = "Відкрито (призначено - виконано)",
                     Values = openFromAssigned,
-                    Fill = new SolidColorPaint(openColor),
+                    Fill = new SolidColorPaint(colors.Slate),
                     Stroke = null,
                     MaxBarWidth = 26,
                     YToolTipLabelFormatter = point => $"Відкрито: {point.Coordinate.PrimaryValue:0}"
@@ -57,7 +82,7 @@ namespace diplom.Services
                 {
                     Name = "Виконано вчасно",
                     Values = onTimeCompleted,
-                    Fill = new SolidColorPaint(onTimeColor),
+                    Fill = new SolidColorPaint(colors.Green),
                     Stroke = null,
                     MaxBarWidth = 26,
                     YToolTipLabelFormatter = point => $"Вчасно: {point.Coordinate.PrimaryValue:0}"
@@ -66,7 +91,7 @@ namespace diplom.Services
                 {
                     Name = "Виконано із запізненням",
                     Values = overdue,
-                    Fill = new SolidColorPaint(overdueColor),
+                    Fill = new SolidColorPaint(colors.Red),
                     Stroke = null,
                     MaxBarWidth = 26,
                     YToolTipLabelFormatter = point => $"Із запізненням: {point.Coordinate.PrimaryValue:0}"
@@ -77,15 +102,13 @@ namespace diplom.Services
                     Values = worked,
                     ScalesYAt = 1,
                     GeometrySize = 6,
-                    Stroke = new SolidColorPaint(lineColor, 2),
+                    Stroke = new SolidColorPaint(colors.Blue, 2),
                     Fill = null,
-                    GeometryStroke = new SolidColorPaint(lineColor, 2),
-                    GeometryFill = new SolidColorPaint(pointFill),
+                    GeometryStroke = new SolidColorPaint(colors.Blue, 2),
+                    GeometryFill = new SolidColorPaint(colors.PointFill),
                     YToolTipLabelFormatter = point => $"Години: {point.Coordinate.PrimaryValue:0.##}"
                 }
             };
-
-            var textPaint = new SolidColorPaint(chartTextColor);
 
             var xAxes = new[]
             {
@@ -93,8 +116,8 @@ namespace diplom.Services
                 {
                     Labels = labels,
                     LabelsPaint = textPaint,
-                    SeparatorsPaint = new SolidColorPaint(separatorColor),
-                    TicksPaint = new SolidColorPaint(tickColor),
+                    SeparatorsPaint = new SolidColorPaint(colors.Separator),
+                    TicksPaint = new SolidColorPaint(colors.Tick),
                     TextSize = 11
                 }
             };
@@ -106,7 +129,7 @@ namespace diplom.Services
                     Name = "Задачі",
                     NamePaint = textPaint,
                     LabelsPaint = textPaint,
-                    SeparatorsPaint = new SolidColorPaint(separatorColor),
+                    SeparatorsPaint = new SolidColorPaint(colors.Separator),
                     TextSize = 11,
                     MinLimit = 0
                 },
@@ -118,7 +141,7 @@ namespace diplom.Services
                     SeparatorsPaint = null,
                     TextSize = 11,
                     MinLimit = 0,
-                    Position = LiveChartsCore.Measure.AxisPosition.End
+                    Position = AxisPosition.End
                 }
             };
 
@@ -127,7 +150,160 @@ namespace diplom.Services
                 Series = series,
                 XAxes = xAxes,
                 YAxes = yAxes,
-                LegendTextPaint = new SolidColorPaint(chartTextColor)
+                LegendTextPaint = textPaint
+            };
+        }
+
+        public static MappedChart MapProjectHours(ProjectAnalyticsDto dto, bool isDarkTheme)
+        {
+            var days = dto.Days.OrderBy(d => d.DayUtc).ToList();
+            var labels = days.Select(d => d.DayUtc.ToString("dd.MM")).ToArray();
+            var worked = days.Select(d => d.WorkedHours).ToArray();
+
+            var colors = GetThemeColors(isDarkTheme);
+            var textPaint = new SolidColorPaint(colors.Text);
+
+            var series = new ISeries[]
+            {
+                new ColumnSeries<double>
+                {
+                    Name = "Години",
+                    Values = worked,
+                    Fill = new SolidColorPaint(colors.Blue),
+                    Stroke = null,
+                    MaxBarWidth = 22,
+                    YToolTipLabelFormatter = point => $"Години: {point.Coordinate.PrimaryValue:0.##}"
+                }
+            };
+
+            return new MappedChart
+            {
+                Series = series,
+                XAxes = BuildSharedXAxes(labels, textPaint, colors),
+                YAxes = new[]
+                {
+                    new Axis
+                    {
+                        Name = "Години",
+                        NamePaint = textPaint,
+                        LabelsPaint = textPaint,
+                        SeparatorsPaint = new SolidColorPaint(colors.Separator),
+                        MinLimit = 0,
+                        TextSize = 11
+                    }
+                },
+                LegendTextPaint = textPaint
+            };
+        }
+
+        public static MappedChart MapProjectAssignedVsCompleted(ProjectAnalyticsDto dto, bool isDarkTheme)
+        {
+            var days = dto.Days.OrderBy(d => d.DayUtc).ToList();
+            var labels = days.Select(d => d.DayUtc.ToString("dd.MM")).ToArray();
+            var assigned = days.Select(d => d.TasksAssigned).ToArray();
+            var completed = days.Select(d => d.TasksCompleted).ToArray();
+
+            var colors = GetThemeColors(isDarkTheme);
+            var textPaint = new SolidColorPaint(colors.Text);
+
+            var series = new ISeries[]
+            {
+                new StackedColumnSeries<int>
+                {
+                    Name = "Призначено",
+                    Values = assigned,
+                    Fill = new SolidColorPaint(colors.Slate),
+                    Stroke = null,
+                    MaxBarWidth = 22,
+                    YToolTipLabelFormatter = point => $"Призначено: {point.Coordinate.PrimaryValue:0}"
+                },
+                new StackedColumnSeries<int>
+                {
+                    Name = "Виконано",
+                    Values = completed,
+                    Fill = new SolidColorPaint(colors.Green),
+                    Stroke = null,
+                    MaxBarWidth = 22,
+                    YToolTipLabelFormatter = point => $"Виконано: {point.Coordinate.PrimaryValue:0}"
+                }
+            };
+
+            return new MappedChart
+            {
+                Series = series,
+                XAxes = BuildSharedXAxes(labels, textPaint, colors),
+                YAxes = new[]
+                {
+                    new Axis
+                    {
+                        Name = "Кількість задач",
+                        NamePaint = textPaint,
+                        LabelsPaint = textPaint,
+                        SeparatorsPaint = new SolidColorPaint(colors.Separator),
+                        MinLimit = 0,
+                        TextSize = 11
+                    }
+                },
+                LegendTextPaint = textPaint
+            };
+        }
+
+        public static MappedChart MapProjectOverdueTrend(ProjectAnalyticsDto dto, bool isDarkTheme)
+        {
+            var days = dto.Days.OrderBy(d => d.DayUtc).ToList();
+            var labels = days.Select(d => d.DayUtc.ToString("dd.MM")).ToArray();
+            var overdue = days.Select(d => d.OverdueCompleted).ToArray();
+
+            var colors = GetThemeColors(isDarkTheme);
+            var textPaint = new SolidColorPaint(colors.Text);
+
+            var series = new ISeries[]
+            {
+                new LineSeries<int>
+                {
+                    Name = "Прострочки",
+                    Values = overdue,
+                    GeometrySize = 6,
+                    Stroke = new SolidColorPaint(colors.Red, 2),
+                    Fill = null,
+                    GeometryStroke = new SolidColorPaint(colors.Red, 2),
+                    GeometryFill = new SolidColorPaint(colors.PointFill),
+                    YToolTipLabelFormatter = point => $"Прострочки: {point.Coordinate.PrimaryValue:0}"
+                }
+            };
+
+            return new MappedChart
+            {
+                Series = series,
+                XAxes = BuildSharedXAxes(labels, textPaint, colors),
+                YAxes = new[]
+                {
+                    new Axis
+                    {
+                        Name = "Кількість",
+                        NamePaint = textPaint,
+                        LabelsPaint = textPaint,
+                        SeparatorsPaint = new SolidColorPaint(colors.Separator),
+                        MinLimit = 0,
+                        TextSize = 11
+                    }
+                },
+                LegendTextPaint = textPaint
+            };
+        }
+
+        private static Axis[] BuildSharedXAxes(string[] labels, SolidColorPaint textPaint, ThemeChartColors colors)
+        {
+            return new[]
+            {
+                new Axis
+                {
+                    Labels = labels,
+                    LabelsPaint = textPaint,
+                    SeparatorsPaint = new SolidColorPaint(colors.Separator),
+                    TicksPaint = new SolidColorPaint(colors.Tick),
+                    TextSize = 11
+                }
             };
         }
     }

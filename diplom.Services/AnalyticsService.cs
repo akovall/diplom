@@ -17,6 +17,11 @@ namespace diplom.Services
             days = days < 7 ? 7 : days > 90 ? 90 : days;
             return _api.GetAsync<UserAnalyticsDto>($"/api/users/{userId}/analytics?days={days}");
         }
+
+        public Task<ProjectAnalyticsDto?> GetProjectAnalyticsAsync(int projectId, int days)
+        {
+            days = days < 7 ? 7 : days > 90 ? 90 : days;
+            return _api.GetAsync<ProjectAnalyticsDto>($"/api/projects/{projectId}/analytics?days={days}");
+        }
     }
 }
-
