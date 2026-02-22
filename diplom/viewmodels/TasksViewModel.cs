@@ -100,6 +100,9 @@ namespace diplom.viewmodels
             LoadProjectsFromCache();
             LoadTasksFromCache();
             LoadAssigneesFromCache();
+
+            // Ensure tasks list reflects server changes made by other clients.
+            _ = RefreshDataAsync();
         }
 
         private async Task ToggleTimerAsync(TaskDisplayItem item)

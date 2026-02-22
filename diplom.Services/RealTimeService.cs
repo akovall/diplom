@@ -31,6 +31,7 @@ namespace diplom.Services
         private readonly SemaphoreSlim _startGate = new(1, 1);
 
         public event Action<int, int>? TimeEntryChanged; // (taskId, userId)
+        public event Action<int>? TaskChanged; // (taskId)
 
         private RealTimeService(ApiClient api)
         {
@@ -60,6 +61,11 @@ namespace diplom.Services
                 _connection.On<int, int>("TimeEntryChanged", (taskId, userId) =>
                 {
                     TimeEntryChanged?.Invoke(taskId, userId);
+                });
+
+                _connection.On<int>("TaskChanged", taskId =>
+                {
+                    TaskChanged?.Invoke(taskId);
                 });
 
                 await _connection.StartAsync();
@@ -95,4 +101,3 @@ namespace diplom.Services
         }
     }
 }
-

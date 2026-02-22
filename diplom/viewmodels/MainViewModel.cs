@@ -106,6 +106,12 @@ namespace diplom.viewmodels
                 _ = AppDataService.Instance.RefreshTasksAsync();
                 _ = AppDataService.Instance.RefreshTimeEntriesTodayAsync();
             };
+
+            RealTimeService.Instance.TaskChanged += taskId =>
+            {
+                _ = AppDataService.Instance.RefreshTasksAsync();
+                _ = AppDataService.Instance.RefreshProjectsAsync();
+            };
         }
         private void ToggleTheme()
         {

@@ -1,8 +1,10 @@
 using diplom.Data;
+using diplom.API.Hubs;
 using diplom.Models;
 using diplom.Models.enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -14,10 +16,12 @@ namespace diplom.API.Controllers
     public class TasksController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<TimeHub> _hub;
 
-        public TasksController(AppDbContext context)
+        public TasksController(AppDbContext context, IHubContext<TimeHub> hub)
         {
             _context = context;
+            _hub = hub;
         }
 
         private int GetCurrentUserId()
@@ -120,6 +124,8 @@ namespace diplom.API.Controllers
                 .Include(t => t.TimeEntries)
                 .FirstOrDefaultAsync(t => t.Id == task.Id);
 
+            await _hub.Clients.All.SendAsync("TaskChanged", task.Id);
+
             return CreatedAtAction(nameof(GetById), new { id = task.Id }, created);
         }
 
@@ -156,6 +162,7 @@ namespace diplom.API.Controllers
             }
 
             await _context.SaveChangesAsync();
+            await _hub.Clients.All.SendAsync("TaskChanged", existing.Id);
             return Ok(existing);
         }
 
@@ -178,6 +185,7 @@ namespace diplom.API.Controllers
 
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
+            await _hub.Clients.All.SendAsync("TaskChanged", task.Id);
             return NoContent();
         }
     }
