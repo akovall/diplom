@@ -1,4 +1,5 @@
 using diplom.Data;
+using diplom.Models.Analytics;
 using diplom.Models.enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +30,21 @@ namespace diplom.API.Controllers
             return User.FindFirst(ClaimTypes.Role)?.Value ?? "Employee";
         }
 
+        private static DateTime GetWeekStartLocal(DateTime localDate)
+        {
+            var date = localDate.Date;
+            var dayOfWeek = (int)date.DayOfWeek; // Sunday=0
+            var mondayBased = dayOfWeek == 0 ? 7 : dayOfWeek; // Monday=1..Sunday=7
+            return date.AddDays(-(mondayBased - 1));
+        }
+
         [HttpGet("stats")]
         public async Task<ActionResult<object>> GetStats()
         {
             var userId = GetCurrentUserId();
             var role = GetCurrentUserRole();
             var today = DateTime.Today;
+            var nowLocal = DateTime.Now;
 
             // Admin/Manager see all tasks, Employee sees only assigned
             var tasksQuery = _context.Tasks.AsQueryable();
@@ -54,7 +64,13 @@ namespace diplom.API.Controllers
 
             var totalTasks = tasks.Count;
             var doneTasks = tasks.Count(t => t.Status == AppTaskStatus.Done);
-            var productivity = totalTasks == 0 ? 0 : Math.Round((double)doneTasks / totalTasks * 100, 1);
+
+            // Smart productivity: week-specific, smoothed (1 done out of 1 created this week != 100%).
+            var weekStartLocal = GetWeekStartLocal(nowLocal);
+            var weekStartUtc = TimeZoneInfo.ConvertTimeToUtc(weekStartLocal);
+            var weekEndUtc = TimeZoneInfo.ConvertTimeToUtc(weekStartLocal.AddDays(7));
+            var smart = ProductivityCalculator.CalculateForWeek(tasks, weekStartUtc, weekEndUtc);
+            var productivity = smart.ScorePercent;
 
             return Ok(new
             {

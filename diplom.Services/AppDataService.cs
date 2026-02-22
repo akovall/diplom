@@ -1,4 +1,5 @@
 using diplom.Models;
+using diplom.Models.Analytics;
 using diplom.Models.enums;
 using System;
 using System.Collections.Generic;
@@ -169,6 +170,27 @@ namespace diplom.Services
             
             var doneTasks = Tasks.Count(t => t.Status == AppTaskStatus.Done);
             return Math.Round((double)doneTasks / totalTasks * 100, 1);
+        }
+
+        public ProductivityResult GetSmartProductivityForWeekLocal(DateTime weekStartLocal)
+        {
+            var weekStart = weekStartLocal.Date;
+            var weekEnd = weekStart.AddDays(7);
+
+            // Tasks/entries are stored as UTC in DB; compare using UTC window.
+            var weekStartUtc = TimeZoneInfo.ConvertTimeToUtc(weekStart);
+            var weekEndUtc = TimeZoneInfo.ConvertTimeToUtc(weekEnd);
+
+            return ProductivityCalculator.CalculateForWeek(Tasks, weekStartUtc, weekEndUtc);
+        }
+
+        public static DateTime GetWeekStartLocal(DateTime localDate)
+        {
+            // ISO-ish week: Monday start, Sunday end.
+            var date = localDate.Date;
+            var dayOfWeek = (int)date.DayOfWeek; // Sunday=0
+            var mondayBased = dayOfWeek == 0 ? 7 : dayOfWeek; // Monday=1..Sunday=7
+            return date.AddDays(-(mondayBased - 1));
         }
 
         public List<TaskItem> GetRecentTasks(int count = 5)

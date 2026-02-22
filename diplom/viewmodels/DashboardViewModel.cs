@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace diplom.viewmodels
@@ -59,6 +60,20 @@ namespace diplom.viewmodels
         {
             get => _productivityText;
             set => SetProperty(ref _productivityText, value);
+        }
+
+        private string _productivityDeltaText = string.Empty;
+        public string ProductivityDeltaText
+        {
+            get => _productivityDeltaText;
+            set => SetProperty(ref _productivityDeltaText, value);
+        }
+
+        private Brush _productivityForeground = Brushes.Gray;
+        public Brush ProductivityForeground
+        {
+            get => _productivityForeground;
+            set => SetProperty(ref _productivityForeground, value);
         }
 
         private string _currentActivityTitle = "No active task";
@@ -121,8 +136,7 @@ namespace diplom.viewmodels
             TasksInProgress = _dataService.GetTasksInProgressCount();
             TasksDone = _dataService.GetTasksDoneCount();
 
-            Productivity = _dataService.GetProductivityPercentage();
-            ProductivityText = $"{Productivity}%";
+            LoadSmartProductivity();
 
             UrgentTasks.Clear();
             foreach (var task in _dataService.GetTopUrgentTasks(3))
@@ -149,6 +163,46 @@ namespace diplom.viewmodels
 
             LoadWeeklyActivity();
             UpdateCurrentActivity();
+        }
+
+        private void LoadSmartProductivity()
+        {
+            var weekStart = AppDataService.GetWeekStartLocal(DateTime.Now);
+            var current = _dataService.GetSmartProductivityForWeekLocal(weekStart);
+            var previous = _dataService.GetSmartProductivityForWeekLocal(weekStart.AddDays(-7));
+
+            Productivity = current.ScorePercent;
+            ProductivityText = $"{Productivity}%";
+
+            var delta = Math.Round(current.ScorePercent - previous.ScorePercent, 1);
+            if (previous.TotalTasks == 0 && current.TotalTasks == 0)
+            {
+                ProductivityDeltaText = string.Empty;
+            }
+            else
+            {
+                var sign = delta > 0 ? "+" : "";
+                ProductivityDeltaText = $"vs last week: {sign}{delta}%";
+            }
+
+            // Color thresholds: >=70 green, <40 red, else theme-neutral gray.
+            ProductivityForeground = CreateFrozenBrushForProductivity(Productivity);
+        }
+
+        private static Brush CreateFrozenBrushForProductivity(double productivityPercent)
+        {
+            SolidColorBrush brush;
+            if (productivityPercent >= 70.0)
+                brush = new SolidColorBrush(Color.FromRgb(0x38, 0xA1, 0x69));
+            else if (productivityPercent < 40.0)
+                brush = new SolidColorBrush(Color.FromRgb(0xE5, 0x3E, 0x3E));
+            else
+                brush = new SolidColorBrush(Color.FromRgb(0xA0, 0xA0, 0xA0));
+
+            if (brush.CanFreeze)
+                brush.Freeze();
+
+            return brush;
         }
 
         private void UpdateCurrentActivity()
