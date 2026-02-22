@@ -86,5 +86,6 @@
     <sys:String x:Key="MenuDetails">Details</sys:String>
     <sys:String x:Key="MenuDeactivateAccount">Deactivate account</sys:String>
     <sys:String x:Key="MenuActivateAccount">Activate account</sys:String>
+    <sys:String x:Key="ChangeProfessionLabel">Change profession:</sys:String>
 
 </ResourceDictionary>

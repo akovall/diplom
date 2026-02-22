@@ -1,5 +1,6 @@
 using diplom.Services;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace diplom.views
@@ -14,6 +15,20 @@ namespace diplom.views
         {
             InitializeComponent();
             UsernameBox.Focus();
+            _ = LoadProfessionsAsync();
+        }
+
+        private async Task LoadProfessionsAsync()
+        {
+            try
+            {
+                var professions = await ApiClient.Instance.GetProfessionsAsync(forRegistration: true);
+                JobTitleBox.ItemsSource = professions;
+            }
+            catch
+            {
+                JobTitleBox.ItemsSource = null;
+            }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
@@ -44,7 +59,7 @@ namespace diplom.views
                 if (_isRegisterMode)
                 {
                     var fullName = FullNameBox.Text.Trim();
-                    var jobTitle = JobTitleBox.Text.Trim();
+                    var jobTitle = (JobTitleBox.Text ?? string.Empty).Trim();
 
                     if (string.IsNullOrEmpty(fullName))
                     {

@@ -135,6 +135,12 @@ namespace diplom.Services
             return (true, string.Empty);
         }
 
+        public async Task<List<string>> GetProfessionsAsync(bool forRegistration)
+        {
+            var endpoint = forRegistration ? "/api/auth/professions" : "/api/users/professions";
+            return await GetAsync<List<string>>(endpoint) ?? new List<string>();
+        }
+
         public void Logout()
         {
             Token = null;

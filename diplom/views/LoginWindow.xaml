@@ -98,14 +98,17 @@
                              BorderBrush="{DynamicResource BorderBrush}"
                              BorderThickness="1"/>
 
-                    <TextBlock Text="Job Title" FontSize="12" Margin="0,0,0,6"
+                    <TextBlock Text="Profession (optional)" FontSize="12" Margin="0,0,0,6"
                                Foreground="{DynamicResource SecondaryText}"/>
-                    <TextBox x:Name="JobTitleBox" Height="36" FontSize="14"
-                             Padding="8,6" Margin="0,0,0,16"
-                             Background="{DynamicResource SurfaceBrush}"
-                             Foreground="{DynamicResource PrimaryText}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             BorderThickness="1"/>
+                    <ComboBox x:Name="JobTitleBox" Height="36" FontSize="14"
+                              Padding="8,6" Margin="0,0,0,16"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              StaysOpenOnEdit="True"
+                              Background="{DynamicResource SurfaceBrush}"
+                              Foreground="{DynamicResource PrimaryText}"
+                              BorderBrush="{DynamicResource BorderBrush}"
+                              BorderThickness="1"/>
                 </StackPanel>
 
                 <!-- Error -->

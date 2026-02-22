@@ -14,6 +14,16 @@ namespace diplom.API.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
+        private static readonly string[] DefaultProfessionsUa =
+        {
+            "Розробник",
+            "Інженер-програміст",
+            "Інженер з якості (QA)",
+            "UI/UX дизайнер",
+            "Менеджер",
+            "Системний адміністратор"
+        };
+
         private readonly AppDbContext _context;
         private readonly IUserActivityService _userActivityService;
 
@@ -56,6 +66,21 @@ namespace diplom.API.Controllers
             return Ok(users);
         }
 
+        // GET: api/users/professions
+        [HttpGet("professions")]
+        [Authorize(Roles = "Admin,Manager")]
+        public ActionResult<List<string>> GetProfessions()
+        {
+            var result = DefaultProfessionsUa
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(t => t)
+                .ToList();
+
+            return Ok(result);
+        }
+
         // PUT: api/users/5/role
         [HttpPut("{id}/role")]
         [Authorize(Roles = "Admin")]
@@ -96,6 +121,20 @@ namespace diplom.API.Controllers
             user.IsActive = true;
             await _context.SaveChangesAsync();
             return Ok();
+        }
+
+        // PUT: api/users/5/job-title
+        [HttpPut("{id}/job-title")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> ChangeJobTitle(int id, [FromBody] ChangeJobTitleRequest request)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound();
+
+            user.JobTitle = ProfessionNormalizer.NormalizeProfession(request.JobTitle);
+            await _context.SaveChangesAsync();
+            return Ok(new { user.Id, user.JobTitle });
         }
 
         // GET: api/users/activity — Admin/Manager: 3-state user activity (offline/idle/active)
@@ -244,6 +283,36 @@ namespace diplom.API.Controllers
                 Days = daysList,
                 RecentCompletedTasks = recentCompleted
             });
+        }
+    }
+
+    public sealed class ChangeJobTitleRequest
+    {
+        public string JobTitle { get; set; } = string.Empty;
+    }
+
+    internal static class ProfessionNormalizer
+    {
+        public static string NormalizeProfession(string? profession)
+        {
+            var value = (profession ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            return value.ToLowerInvariant() switch
+            {
+                "developer" => "Розробник",
+                "software engineer" => "Інженер-програміст",
+                "qa" => "Інженер з якості (QA)",
+                "qa engineer" => "Інженер з якості (QA)",
+                "quality assurance" => "Інженер з якості (QA)",
+                "ui ux designer" => "UI/UX дизайнер",
+                "ui/ux designer" => "UI/UX дизайнер",
+                "manager" => "Менеджер",
+                "system admin" => "Системний адміністратор",
+                "system administrator" => "Системний адміністратор",
+                _ => value
+            };
         }
     }
 }

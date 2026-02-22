@@ -16,6 +16,16 @@ namespace diplom.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        private static readonly string[] DefaultProfessionsUa =
+        {
+            "Розробник",
+            "Інженер-програміст",
+            "Інженер з якості (QA)",
+            "UI/UX дизайнер",
+            "Менеджер",
+            "Системний адміністратор"
+        };
+
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
 
@@ -38,7 +48,7 @@ namespace diplom.API.Controllers
                 Username = request.Username,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 FullName = request.FullName,
-                JobTitle = request.JobTitle,
+                JobTitle = NormalizeProfession(request.JobTitle),
                 Role = UserRole.Employee,
                 IsActive = true
             };
@@ -57,6 +67,21 @@ namespace diplom.API.Controllers
                 JobTitle = user.JobTitle,
                 Role = user.Role.ToString()
             });
+        }
+
+        // GET: api/auth/professions
+        [HttpGet("professions")]
+        [AllowAnonymous]
+        public ActionResult<List<string>> GetProfessions()
+        {
+            var result = DefaultProfessionsUa
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(t => t)
+                .ToList();
+
+            return Ok(result);
         }
 
         // POST: api/auth/login
@@ -146,6 +171,28 @@ namespace diplom.API.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private static string NormalizeProfession(string? profession)
+        {
+            var value = (profession ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            return value.ToLowerInvariant() switch
+            {
+                "developer" => "Розробник",
+                "software engineer" => "Інженер-програміст",
+                "qa" => "Інженер з якості (QA)",
+                "qa engineer" => "Інженер з якості (QA)",
+                "quality assurance" => "Інженер з якості (QA)",
+                "ui ux designer" => "UI/UX дизайнер",
+                "ui/ux designer" => "UI/UX дизайнер",
+                "manager" => "Менеджер",
+                "system admin" => "Системний адміністратор",
+                "system administrator" => "Системний адміністратор",
+                _ => value
+            };
         }
     }
 }

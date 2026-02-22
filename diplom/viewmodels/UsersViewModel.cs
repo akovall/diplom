@@ -16,10 +16,13 @@ namespace diplom.viewmodels
 {
     public partial class UsersViewModel : ObservableObject
     {
+        public const string AddProfessionOption = "➕ Додати професію...";
+
         [ObservableProperty]
         private bool _isLoading;
 
         public ObservableCollection<UserDisplayItem> Users { get; } = new();
+        public ObservableCollection<string> AvailableJobTitles { get; } = new();
         public UserRole[] AvailableRoles { get; } = (UserRole[])Enum.GetValues(typeof(UserRole));
 
         private readonly DispatcherTimer _activityTimer;
@@ -86,6 +89,17 @@ namespace diplom.viewmodels
             }
         }
 
+        [RelayCommand]
+        private async Task ChangeUserJobTitle(UserDisplayItem user)
+        {
+            if (user == null) return;
+            if (string.Equals(user.JobTitle, AddProfessionOption, StringComparison.Ordinal)) return;
+
+            var payload = new { jobTitle = user.JobTitle.Trim() };
+            var success = await ApiClient.Instance.PutAsync($"/api/users/{user.Id}/job-title", payload);
+            if (!success) return;
+        }
+
         private async void LoadUsers()
         {
             IsLoading = true;
@@ -93,7 +107,19 @@ namespace diplom.viewmodels
             {
                 var users = await ApiClient.Instance.GetAsync<List<User>>("/api/users") ?? new();
                 var activity = await ApiClient.Instance.GetAsync<List<UserActivityDto>>("/api/users/activity") ?? new();
+                var professions = await ApiClient.Instance.GetAsync<List<string>>("/api/users/professions") ?? new();
                 var stateByUserId = activity.ToDictionary(a => a.UserId, a => a.State);
+
+                AvailableJobTitles.Clear();
+                foreach (var title in professions
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Select(x => x.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(x => x))
+                {
+                    AvailableJobTitles.Add(title);
+                }
+                AvailableJobTitles.Add(AddProfessionOption);
 
                 Users.Clear();
                 foreach (var user in users)
@@ -162,7 +188,18 @@ namespace diplom.viewmodels
         public int Id => _user.Id;
         public string Username => _user.Username;
         public string FullName => _user.FullName;
-        public string JobTitle => _user.JobTitle;
+        public string JobTitle
+        {
+            get => _user.JobTitle;
+            set
+            {
+                var normalized = value ?? string.Empty;
+                if (string.Equals(_user.JobTitle, normalized, StringComparison.Ordinal))
+                    return;
+                _user.JobTitle = normalized;
+                OnPropertyChanged();
+            }
+        }
 
         public bool IsActive
         {
