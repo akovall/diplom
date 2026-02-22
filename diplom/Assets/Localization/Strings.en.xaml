@@ -46,6 +46,11 @@
     <sys:String x:Key="Today">Today</sys:String>
     <sys:String x:Key="Tomorrow">Tomorrow</sys:String>
 
+    <!-- Productivity hints -->
+    <sys:String x:Key="ProductivityHintAddEstimates">Add time estimates</sys:String>
+    <sys:String x:Key="ProductivityHintReviewEstimates">Review your estimates</sys:String>
+    <sys:String x:Key="ProductivityVsLastWeekFormat">vs last week: {0}</sys:String>
+
     <sys:String x:Key="SettingsAppearance">Appearance</sys:String>
     <sys:String x:Key="SettingsTheme">Interface Theme</sys:String>
     <sys:String x:Key="SettingsThemeDesc">Switch between light and dark theme</sys:String>

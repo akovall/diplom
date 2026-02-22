@@ -115,6 +115,9 @@ namespace diplom.API.Controllers
             }
 
             task.CreatedAt = DateTime.UtcNow;
+            if (task.AssigneeId.HasValue)
+                task.AssignedAtUtc = DateTime.UtcNow;
+            task.CompletedAtUtc = task.Status == AppTaskStatus.Done ? DateTime.UtcNow : null;
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
@@ -149,7 +152,17 @@ namespace diplom.API.Controllers
 
             existing.Title = task.Title;
             existing.Description = task.Description;
-            existing.Status = task.Status;
+
+            if (existing.Status != task.Status)
+            {
+                // Keep CompletedAtUtc in sync with Done transitions.
+                if (task.Status == AppTaskStatus.Done)
+                    existing.CompletedAtUtc = DateTime.UtcNow;
+                else if (existing.Status == AppTaskStatus.Done)
+                    existing.CompletedAtUtc = null;
+
+                existing.Status = task.Status;
+            }
             existing.Priority = task.Priority;
             existing.Deadline = task.Deadline;
             existing.EstimatedHours = task.EstimatedHours;
@@ -158,7 +171,11 @@ namespace diplom.API.Controllers
             if (isAdminOrManager)
             {
                 existing.ProjectId = task.ProjectId;
-                existing.AssigneeId = task.AssigneeId;
+                if (existing.AssigneeId != task.AssigneeId)
+                {
+                    existing.AssigneeId = task.AssigneeId;
+                    existing.AssignedAtUtc = task.AssigneeId.HasValue ? DateTime.UtcNow : null;
+                }
             }
 
             await _context.SaveChangesAsync();

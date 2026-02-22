@@ -139,6 +139,18 @@ namespace diplom.Services
             return Tasks.Count(t => t.Status == AppTaskStatus.Done);
         }
 
+        public int GetMyTasksInProgressCount()
+        {
+            var userId = _api.UserId;
+            return Tasks.Count(t => t.AssigneeId == userId && t.Status == AppTaskStatus.InProgress);
+        }
+
+        public int GetMyTasksDoneCount()
+        {
+            var userId = _api.UserId;
+            return Tasks.Count(t => t.AssigneeId == userId && t.Status == AppTaskStatus.Done);
+        }
+
         public int GetTasksDoneToday()
         {
             var today = DateTime.Today;
@@ -152,9 +164,31 @@ namespace diplom.Services
                                    t.Status != AppTaskStatus.Done);
         }
 
+        public int GetMyUrgentTasksCount()
+        {
+            var userId = _api.UserId;
+            return Tasks.Count(t =>
+                t.AssigneeId == userId &&
+                t.Priority == TaskPriority.Critical &&
+                t.Status != AppTaskStatus.Done);
+        }
+
         public List<TaskItem> GetTopUrgentTasks(int count = 3)
         {
             return Tasks
+                .Where(t => t.Status != AppTaskStatus.Done)
+                .Where(t => t.Deadline.HasValue)
+                .OrderBy(t => t.Deadline)
+                .ThenByDescending(t => t.Priority)
+                .Take(count)
+                .ToList();
+        }
+
+        public List<TaskItem> GetMyTopUrgentTasks(int count = 3)
+        {
+            var userId = _api.UserId;
+            return Tasks
+                .Where(t => t.AssigneeId == userId)
                 .Where(t => t.Status != AppTaskStatus.Done)
                 .Where(t => t.Deadline.HasValue)
                 .OrderBy(t => t.Deadline)
@@ -181,7 +215,9 @@ namespace diplom.Services
             var weekStartUtc = TimeZoneInfo.ConvertTimeToUtc(weekStart);
             var weekEndUtc = TimeZoneInfo.ConvertTimeToUtc(weekEnd);
 
-            return ProductivityCalculator.CalculateForWeek(Tasks, weekStartUtc, weekEndUtc);
+            var userId = _api.UserId;
+            var myTasks = Tasks.Where(t => t.AssigneeId == userId);
+            return ProductivityCalculator.CalculateForWeek(myTasks, weekStartUtc, weekEndUtc);
         }
 
         public static DateTime GetWeekStartLocal(DateTime localDate)

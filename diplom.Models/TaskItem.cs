@@ -19,6 +19,12 @@ namespace diplom.Models
         public TaskPriority Priority { get; set; } = TaskPriority.Medium;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Analytics-friendly timestamps (UTC). These allow correct week-based metrics:
+        // - AssignedAtUtc: when AssigneeId was set/changed
+        // - CompletedAtUtc: when Status transitioned to Done
+        public DateTime? AssignedAtUtc { get; set; }
+        public DateTime? CompletedAtUtc { get; set; }
         public DateTime? Deadline { get; set; }
 
         public double EstimatedHours { get; set; } = 0;

@@ -42,14 +42,11 @@ namespace diplom.API.Controllers
         public async Task<ActionResult<object>> GetStats()
         {
             var userId = GetCurrentUserId();
-            var role = GetCurrentUserRole();
             var today = DateTime.Today;
             var nowLocal = DateTime.Now;
 
-            // Admin/Manager see all tasks, Employee sees only assigned
-            var tasksQuery = _context.Tasks.AsQueryable();
-            if (role == "Employee")
-                tasksQuery = tasksQuery.Where(t => t.AssigneeId == userId);
+            // Dashboard is always personal: only tasks assigned to current user.
+            var tasksQuery = _context.Tasks.Where(t => t.AssigneeId == userId);
 
             var tasks = await tasksQuery.ToListAsync();
 
@@ -65,7 +62,7 @@ namespace diplom.API.Controllers
             var totalTasks = tasks.Count;
             var doneTasks = tasks.Count(t => t.Status == AppTaskStatus.Done);
 
-            // Smart productivity: week-specific, smoothed (1 done out of 1 created this week != 100%).
+            // Smart productivity: week-specific, smoothed (1 done out of 1 assigned this week != 100%).
             var weekStartLocal = GetWeekStartLocal(nowLocal);
             var weekStartUtc = TimeZoneInfo.ConvertTimeToUtc(weekStartLocal);
             var weekEndUtc = TimeZoneInfo.ConvertTimeToUtc(weekStartLocal.AddDays(7));

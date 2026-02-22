@@ -6,7 +6,7 @@
     <sys:String x:Key="BrandName">WORKFLOW</sys:String>
     <sys:String x:Key="MenuDashboard">Головна</sys:String>
     <sys:String x:Key="MenuTasks">Задачі</sys:String>
-    <sys:String x:Key="MenuProjects">Проекти</sys:String>
+    <sys:String x:Key="MenuProjects">Проєкти</sys:String>
     <sys:String x:Key="MenuTimeTracker">Облік часу</sys:String>
     <sys:String x:Key="MenuAnalytics">Аналітика</sys:String>
     <sys:String x:Key="MenuSettings">Налаштування</sys:String>
@@ -31,8 +31,8 @@
     <sys:String x:Key="TodayLogs">Записи за сьогодні</sys:String>
     <sys:String x:Key="Entries">записів</sys:String>
     <sys:String x:Key="SelectTask">Оберіть завдання</sys:String>
-    <sys:String x:Key="SearchProjects">Пошук проектів...</sys:String>
-    <sys:String x:Key="NewProject">Новий проект</sys:String>
+    <sys:String x:Key="SearchProjects">Пошук проєктів...</sys:String>
+    <sys:String x:Key="NewProject">Новий проєкт</sys:String>
     <sys:String x:Key="ActiveProjects">Активні</sys:String>
     <sys:String x:Key="ArchivedProjects">Архівовані</sys:String>
     <sys:String x:Key="Tasks">завдань</sys:String>
@@ -60,7 +60,7 @@
     <sys:String x:Key="CreateTaskSubtitle">Заповніть інформацію про нове завдання</sys:String>
     <sys:String x:Key="TaskTitleLabel">Назва завдання *</sys:String>
     <sys:String x:Key="TaskDescriptionLabel">Опис</sys:String>
-    <sys:String x:Key="TaskProjectLabel">Проект *</sys:String>
+    <sys:String x:Key="TaskProjectLabel">Проєкт *</sys:String>
     <sys:String x:Key="TaskPriorityLabel">Пріоритет</sys:String>
     <sys:String x:Key="TaskDeadlineLabel">Дедлайн</sys:String>
     <sys:String x:Key="TaskEstimatedHoursLabel">Оцінка часу (години)</sys:String>
@@ -74,12 +74,17 @@
     <sys:String x:Key="TaskNameLabel">Назва</sys:String>
     <sys:String x:Key="TaskStatusLabel">Статус</sys:String>
     <sys:String x:Key="SaveButton">Зберегти</sys:String>
-    
+
     <!-- Context Menu -->
     <sys:String x:Key="MenuEdit">Редагувати</sys:String>
     <sys:String x:Key="MenuDelete">Видалити</sys:String>
     <sys:String x:Key="MenuDetails">Детальніше</sys:String>
     <sys:String x:Key="MenuDeactivateAccount">Деактивувати акаунт</sys:String>
     <sys:String x:Key="MenuActivateAccount">Активувати акаунт</sys:String>
+
+    <!-- Productivity hints -->
+    <sys:String x:Key="ProductivityHintAddEstimates">Додайте оцінки часу</sys:String>
+    <sys:String x:Key="ProductivityHintReviewEstimates">Перегляньте оцінки</sys:String>
+    <sys:String x:Key="ProductivityVsLastWeekFormat">порівняно з минулим тижнем: {0}</sys:String>
 
 </ResourceDictionary>

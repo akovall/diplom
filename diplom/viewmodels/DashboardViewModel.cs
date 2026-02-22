@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -76,6 +77,13 @@ namespace diplom.viewmodels
             set => SetProperty(ref _productivityForeground, value);
         }
 
+        private string _productivityHintText = string.Empty;
+        public string ProductivityHintText
+        {
+            get => _productivityHintText;
+            set => SetProperty(ref _productivityHintText, value);
+        }
+
         private string _currentActivityTitle = "No active task";
         public string CurrentActivityTitle
         {
@@ -133,18 +141,18 @@ namespace diplom.viewmodels
             WorkedToday = $"{(int)todayWorked.TotalHours:D2}:{todayWorked.Minutes:D2}";
             WorkedTodayProgress = Math.Clamp(todayWorked.TotalHours / TargetWorkHoursPerDay * 100.0, 0, 100);
 
-            TasksInProgress = _dataService.GetTasksInProgressCount();
-            TasksDone = _dataService.GetTasksDoneCount();
+            TasksInProgress = _dataService.GetMyTasksInProgressCount();
+            TasksDone = _dataService.GetMyTasksDoneCount();
 
             LoadSmartProductivity();
 
             UrgentTasks.Clear();
-            foreach (var task in _dataService.GetTopUrgentTasks(3))
+            foreach (var task in _dataService.GetMyTopUrgentTasks(3))
             {
                 UrgentTasks.Add(new UrgentTaskItem
                 {
                     Title = task.Title,
-                    DeadlineText = FormatDeadline(task.Deadline)
+                    DeadlineText = FormatDeadlineDateOnly(task.Deadline)
                 });
             }
 
@@ -182,11 +190,25 @@ namespace diplom.viewmodels
             else
             {
                 var sign = delta > 0 ? "+" : "";
-                ProductivityDeltaText = $"vs last week: {sign}{delta}%";
+                var template = ResolveResourceString("ProductivityVsLastWeekFormat");
+                ProductivityDeltaText = string.IsNullOrWhiteSpace(template)
+                    ? $"vs last week: {sign}{delta}%"
+                    : string.Format(template, $"{sign}{delta}%");
             }
 
             // Color thresholds: >=70 green, <40 red, else theme-neutral gray.
             ProductivityForeground = CreateFrozenBrushForProductivity(Productivity);
+
+            ProductivityHintText = ResolveResourceString(current.PlanningHintKey);
+        }
+
+        private static string ResolveResourceString(string? key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return string.Empty;
+
+            // Resources are used for localization (Strings.en.xaml / Strings.uk.xaml).
+            return Application.Current.TryFindResource(key) as string ?? string.Empty;
         }
 
         private static Brush CreateFrozenBrushForProductivity(double productivityPercent)
@@ -273,6 +295,14 @@ namespace diplom.viewmodels
                 return $"Tomorrow, {local:HH:mm}";
 
             return local.ToString("dd.MM.yyyy, HH:mm");
+        }
+
+        private static string FormatDeadlineDateOnly(DateTime? deadline)
+        {
+            if (!deadline.HasValue)
+                return string.Empty;
+
+            return deadline.Value.ToString("dd.MM.yyyy");
         }
 
         private string GetTaskTimeSpent(TaskItem task)
